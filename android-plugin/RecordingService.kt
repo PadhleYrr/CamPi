@@ -8,7 +8,6 @@ import android.media.*
 import android.os.*
 import android.provider.MediaStore
 import android.util.Log
-import androidx.core.app.NotificationCompat
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -16,15 +15,15 @@ import java.util.*
 class RecordingService : Service() {
 
     companion object {
-        const val ACTION_START   = "com.gkk.app.START_RECORDING"
-        const val ACTION_STOP    = "com.gkk.app.STOP_RECORDING"
-        const val CHANNEL_ID     = "dualcam_rec_channel"
-        const val NOTIF_ID       = 9001
-        const val TAG            = "DualCamRec"
+        const val ACTION_START = "com.gkk.app.START_RECORDING"
+        const val ACTION_STOP  = "com.gkk.app.STOP_RECORDING"
+        const val CHANNEL_ID   = "dualcam_rec_channel"
+        const val NOTIF_ID     = 9001
+        const val TAG          = "DualCamRec"
 
-        @Volatile var isRunning   = false
-        @Volatile var lastPaths: Pair<String, String>? = null // back, front
-        private var startMs       = 0L
+        @Volatile var isRunning: Boolean = false
+        @Volatile var lastPaths: Pair<String, String>? = null
+        private var startMs = 0L
 
         fun elapsedSeconds(): Long =
             if (isRunning && startMs > 0) (System.currentTimeMillis() - startMs) / 1000 else 0L
@@ -32,10 +31,11 @@ class RecordingService : Service() {
         fun createNotificationChannel(ctx: Context) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val ch = NotificationChannel(
-                    CHANNEL_ID, "Dual Camera Recording",
+                    CHANNEL_ID,
+                    "Dual Camera Recording",
                     NotificationManager.IMPORTANCE_LOW
                 ).apply {
-                    description   = "Live recording status"
+                    description = "Live recording status"
                     setShowBadge(false)
                     setSound(null, null)
                 }
@@ -45,7 +45,6 @@ class RecordingService : Service() {
         }
     }
 
-    // ── Hardware handles ──────────────────────────────────────────────────
     private var cameraManager: CameraManager? = null
     private var backDevice:    CameraDevice?  = null
     private var frontDevice:   CameraDevice?  = null
@@ -53,68 +52,68 @@ class RecordingService : Service() {
     private var frontSession:  CameraCaptureSession? = null
     private var backRecorder:  MediaRecorder? = null
     private var frontRecorder: MediaRecorder? = null
-
-    // ── Threading ─────────────────────────────────────────────────────────
-    private var camThread: HandlerThread? = null
-    private var camHandler: Handler?      = null
-
-    // ── Wake / timer ──────────────────────────────────────────────────────
+    private var camThread:     HandlerThread? = null
+    private var camHandler:    Handler?       = null
     private var wakeLock:      PowerManager.WakeLock? = null
-    private val mainHandler    = Handler(Looper.getMainLooper())
-    private var backPath       = ""
-    private var frontPath      = ""
-    private var sessionsReady  = 0   // count up to 2 then start recorders
+    private var outputDir:     File?          = null
 
-    // ── Timer tick ───────────────────────────────────────────────────────
-    private val tickRunnable = object : Runnable {
-        override fun run() {
-            val s = elapsedSeconds()
-            val h = s / 3600; val m = (s % 3600) / 60; val sec = s % 60
-            val label = if (h > 0) "%02d:%02d:%02d".format(h, m, sec)
-                        else       "%02d:%02d".format(m, sec)
-            pushNotification("🔴 Recording  $label  (both cameras)")
-            mainHandler.postDelayed(this, 1000)
-        }
+    override fun onBind(intent: Intent?): IBinder? = null
+
+    override fun onCreate() {
+        super.onCreate()
+        cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
+        outputDir = File(
+            getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES),
+            "DualCam"
+        ).also { it.mkdirs() }
+        camThread = HandlerThread("CamThread").also { it.start() }
+        camHandler = Handler(camThread!!.looper)
     }
-
-    // ── Service lifecycle ─────────────────────────────────────────────────
-    override fun onBind(intent: Intent?) = null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
             ACTION_START -> {
                 val mode = intent.getStringExtra("mode") ?: "background"
-                startRecording(mode)
+                startForegroundWithNotif()
+                acquireWakeLock(mode)
+                startRecording()
             }
-            ACTION_STOP -> {
-                stopRecording()
-                stopSelf()
-            }
+            ACTION_STOP -> stopRecordingAndSelf()
         }
         return START_STICKY
     }
 
-    override fun onDestroy() {
-        stopRecording()
-        super.onDestroy()
-    }
+    private fun startForegroundWithNotif() {
+        createNotificationChannel(this)
 
-    // ── Start ─────────────────────────────────────────────────────────────
-    private fun startRecording(mode: String) {
-        if (isRunning) return
-        isRunning  = true
-        lastPaths  = null
-        startMs    = System.currentTimeMillis()
+        val stopIntent = PendingIntent.getService(
+            this, 0,
+            Intent(this, RecordingService::class.java).apply { action = ACTION_STOP },
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
 
-        // Partial wake lock = CPU alive, screen can be off
-        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = pm.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "GKK::DualCamRecord"
-        ).also { it.acquire(4 * 3600 * 1000L) }   // max 4 h
+        val notif = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Notification.Builder(this, CHANNEL_ID)
+                .setContentTitle("🔴 Recording")
+                .setContentText("Both cameras active — tap Stop to end")
+                .setSmallIcon(android.R.drawable.ic_media_play)
+                .setOngoing(true)
+                .addAction(
+                    Notification.Action.Builder(
+                        null, "⏹ Stop", stopIntent
+                    ).build()
+                )
+                .build()
+        } else {
+            @Suppress("DEPRECATION")
+            Notification.Builder(this)
+                .setContentTitle("🔴 Recording")
+                .setContentText("Both cameras active")
+                .setSmallIcon(android.R.drawable.ic_media_play)
+                .setOngoing(true)
+                .build()
+        }
 
-        // Put into foreground immediately (required before camera on API 34+)
-        val notif = buildNotification("📷 Starting cameras…")
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             startForeground(
                 NOTIF_ID, notif,
@@ -124,209 +123,136 @@ class RecordingService : Service() {
         } else {
             startForeground(NOTIF_ID, notif)
         }
-
-        // Dedicate a thread for Camera2 callbacks
-        camThread  = HandlerThread("DualCamThread").also { it.start() }
-        camHandler = Handler(camThread!!.looper)
-
-        cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
-        // Build output paths
-        val ts  = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val dir = File(getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES), "DualCam")
-            .also { it.mkdirs() }
-        backPath  = File(dir, "back_$ts.mp4").absolutePath
-        frontPath = File(dir, "front_$ts.mp4").absolutePath
-
-        openCameras()
-        mainHandler.post(tickRunnable)
     }
 
-    // ── Camera2 ───────────────────────────────────────────────────────────
-    private fun openCameras() {
-        var backId:  String? = null
-        var frontId: String? = null
+    private fun acquireWakeLock(mode: String) {
+        val pm = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "GKK:DualCamWake")
+        wakeLock?.acquire(4 * 60 * 60 * 1000L) // 4 hours max
+    }
+
+    private fun startRecording() {
+        isRunning = true
+        startMs   = System.currentTimeMillis()
+        val ts    = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+
+        val backFile  = File(outputDir, "back_$ts.mp4")
+        val frontFile = File(outputDir, "front_$ts.mp4")
+        lastPaths = Pair(backFile.absolutePath, frontFile.absolutePath)
+
+        openCamera("back",  backFile,  isBack = true)
+        openCamera("front", frontFile, isBack = false)
+    }
+
+    private fun openCamera(label: String, outFile: File, isBack: Boolean) {
         try {
-            for (id in cameraManager!!.cameraIdList) {
-                val ch = cameraManager!!.getCameraCharacteristics(id)
-                when (ch.get(CameraCharacteristics.LENS_FACING)) {
-                    CameraCharacteristics.LENS_FACING_BACK  -> if (backId  == null) backId  = id
-                    CameraCharacteristics.LENS_FACING_FRONT -> if (frontId == null) frontId = id
+            val camId = pickCamera(isBack)
+            if (camId == null) {
+                Log.w(TAG, "No ${if (isBack) "back" else "front"} camera found")
+                return
+            }
+            val recorder = buildRecorder(outFile, isBack)
+            if (isBack) backRecorder = recorder else frontRecorder = recorder
+
+            @Suppress("MissingPermission")
+            cameraManager?.openCamera(camId, object : CameraDevice.StateCallback() {
+                override fun onOpened(camera: CameraDevice) {
+                    if (isBack) backDevice = camera else frontDevice = camera
+                    startCaptureSession(camera, recorder, isBack)
                 }
-            }
-        } catch (e: CameraAccessException) {
-            Log.e(TAG, "enumerate cameras: ${e.message}")
-        }
-
-        // BACK camera — video 1280×720 + audio
-        backId?.let { id ->
-            try {
-                backRecorder = buildRecorder(backPath, withAudio = true,  w = 1280, h = 720)
-                cameraManager!!.openCamera(id, makeDeviceCallback(isFront = false), camHandler)
-            } catch (e: Exception) { Log.e(TAG, "open back: ${e.message}") }
-        }
-
-        // FRONT camera — video 640×480, no audio (MIC already claimed)
-        frontId?.let { id ->
-            try {
-                frontRecorder = buildRecorder(frontPath, withAudio = false, w = 640,  h = 480)
-                cameraManager!!.openCamera(id, makeDeviceCallback(isFront = true), camHandler)
-            } catch (e: Exception) { Log.e(TAG, "open front: ${e.message}") }
+                override fun onDisconnected(camera: CameraDevice) { camera.close() }
+                override fun onError(camera: CameraDevice, error: Int) {
+                    Log.e(TAG, "$label camera error $error")
+                    camera.close()
+                }
+            }, camHandler)
+        } catch (e: Exception) {
+            Log.e(TAG, "openCamera $label failed", e)
         }
     }
 
-    private fun makeDeviceCallback(isFront: Boolean) = object : CameraDevice.StateCallback() {
-        override fun onOpened(cam: CameraDevice) {
-            if (isFront) {
-                frontDevice = cam
-                createSession(cam, frontRecorder!!) { sess -> frontSession = sess; onSessionReady() }
-            } else {
-                backDevice = cam
-                createSession(cam, backRecorder!!)  { sess -> backSession  = sess; onSessionReady() }
-            }
-        }
-        override fun onDisconnected(cam: CameraDevice) { cam.close() }
-        override fun onError(cam: CameraDevice, error: Int) {
-            Log.e(TAG, "camera error $error"); cam.close()
+    private fun pickCamera(isBack: Boolean): String? {
+        return cameraManager?.cameraIdList?.firstOrNull { id ->
+            val chars = cameraManager?.getCameraCharacteristics(id)
+            val facing = chars?.get(CameraCharacteristics.LENS_FACING)
+            if (isBack) facing == CameraCharacteristics.LENS_FACING_BACK
+            else        facing == CameraCharacteristics.LENS_FACING_FRONT
         }
     }
 
-    private fun createSession(
-        cam: CameraDevice, rec: MediaRecorder, onReady: (CameraCaptureSession) -> Unit
-    ) {
-        val surface = rec.surface
-        @Suppress("DEPRECATION")
-        cam.createCaptureSession(listOf(surface), object : CameraCaptureSession.StateCallback() {
-            override fun onConfigured(sess: CameraCaptureSession) {
-                onReady(sess)
-                val req = cam.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
-                    addTarget(surface)
-                    set(CaptureRequest.CONTROL_AE_TARGET_FPS_RANGE, android.util.Range(15, 30))
-                }.build()
-                sess.setRepeatingRequest(req, null, camHandler)
-            }
-            override fun onConfigureFailed(sess: CameraCaptureSession) {
-                Log.e(TAG, "session configure failed")
-            }
-        }, camHandler)
-    }
-
-    @Synchronized
-    private fun onSessionReady() {
-        sessionsReady++
-        // Start both recorders once both sessions are live
-        if (sessionsReady >= 2) {
-            camHandler?.post {
-                try { backRecorder?.start()  } catch (e: Exception) { Log.e(TAG, "back start: ${e.message}") }
-                try { frontRecorder?.start() } catch (e: Exception) { Log.e(TAG, "front start: ${e.message}") }
-            }
-        }
-    }
-
-    // ── MediaRecorder builder ─────────────────────────────────────────────
-    @Suppress("DEPRECATION")
-    private fun buildRecorder(path: String, withAudio: Boolean, w: Int, h: Int): MediaRecorder {
+    private fun buildRecorder(outFile: File, isBack: Boolean): MediaRecorder {
         val mr = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-                     MediaRecorder(this) else MediaRecorder()
-        if (withAudio) mr.setAudioSource(MediaRecorder.AudioSource.MIC)
-        mr.setVideoSource(MediaRecorder.VideoSource.SURFACE)
-        mr.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        mr.setOutputFile(path)
-        mr.setVideoEncoder(MediaRecorder.VideoEncoder.H264)
-        mr.setVideoSize(w, h)
-        mr.setVideoFrameRate(30)
-        mr.setVideoEncodingBitRate(if (withAudio) 2_500_000 else 1_200_000)
-        if (withAudio) {
-            mr.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
-            mr.setAudioSamplingRate(44100)
-            mr.setAudioEncodingBitRate(128_000)
+            MediaRecorder(this) else @Suppress("DEPRECATION") MediaRecorder()
+
+        mr.apply {
+            if (isBack) {
+                setAudioSource(MediaRecorder.AudioSource.MIC)
+            }
+            setVideoSource(MediaRecorder.VideoSource.SURFACE)
+            setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+            if (isBack) setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
+            setVideoEncoder(MediaRecorder.VideoEncoder.H264)
+            setVideoSize(if (isBack) 1280 else 640, if (isBack) 720 else 480)
+            setVideoFrameRate(30)
+            setVideoEncodingBitRate(if (isBack) 3_000_000 else 1_000_000)
+            setOutputFile(outFile.absolutePath)
+            prepare()
         }
-        mr.prepare()
         return mr
     }
 
-    // ── Stop ──────────────────────────────────────────────────────────────
-    private fun stopRecording() {
-        if (!isRunning) return
-        isRunning = false
-        mainHandler.removeCallbacks(tickRunnable)
-
-        safeClose { backSession?.stopRepeating() }
-        safeClose { frontSession?.stopRepeating() }
-        safeClose { backSession?.close() }
-        safeClose { frontSession?.close() }
-        safeClose { backDevice?.close() }
-        safeClose { frontDevice?.close() }
-
-        Thread.sleep(200)   // let camera release surface before stopping recorder
-
-        safeClose { backRecorder?.stop();  backRecorder?.release() }
-        safeClose { frontRecorder?.stop(); frontRecorder?.release() }
-
-        camThread?.quitSafely()
-        wakeLock?.let { if (it.isHeld) it.release() }
-        sessionsReady = 0
-
-        lastPaths = Pair(backPath, frontPath)
-
-        // Publish to Downloads (Android 10+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            publishToDownloads(backPath)
-            publishToDownloads(frontPath)
-        }
-
-        stopForeground(STOP_FOREGROUND_REMOVE)
-        Log.i(TAG, "Recording stopped. back=$backPath front=$frontPath")
-    }
-
-    private fun publishToDownloads(srcPath: String) {
+    private fun startCaptureSession(
+        camera: CameraDevice,
+        recorder: MediaRecorder,
+        isBack: Boolean
+    ) {
         try {
-            val f = File(srcPath)
-            if (!f.exists()) return
-            val values = ContentValues().apply {
-                put(MediaStore.Downloads.DISPLAY_NAME, f.name)
-                put(MediaStore.Downloads.MIME_TYPE,    "video/mp4")
-                put(MediaStore.Downloads.RELATIVE_PATH,"Download/DualCam")
-                put(MediaStore.Downloads.IS_PENDING,    1)
-            }
-            val uri = contentResolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values)
-            uri?.let {
-                contentResolver.openOutputStream(it)?.use { out ->
-                    f.inputStream().use { inp -> inp.copyTo(out) }
-                }
-                values.clear()
-                values.put(MediaStore.Downloads.IS_PENDING, 0)
-                contentResolver.update(it, values, null, null)
-            }
+            val surface = recorder.surface
+            @Suppress("DEPRECATION")
+            camera.createCaptureSession(
+                listOf(surface),
+                object : CameraCaptureSession.StateCallback() {
+                    override fun onConfigured(session: CameraCaptureSession) {
+                        if (isBack) backSession = session else frontSession = session
+                        val req = camera.createCaptureRequest(CameraDevice.TEMPLATE_RECORD).apply {
+                            addTarget(surface)
+                        }.build()
+                        session.setRepeatingRequest(req, null, camHandler)
+                        recorder.start()
+                        Log.i(TAG, "${if (isBack) "Back" else "Front"} camera recording started")
+                    }
+                    override fun onConfigureFailed(session: CameraCaptureSession) {
+                        Log.e(TAG, "Session configure failed for ${if (isBack) "back" else "front"}")
+                    }
+                },
+                camHandler
+            )
         } catch (e: Exception) {
-            Log.w(TAG, "publishToDownloads: ${e.message}")
+            Log.e(TAG, "startCaptureSession failed", e)
         }
     }
 
-    // ── Notification helpers ──────────────────────────────────────────────
-    private fun buildNotification(text: String): Notification {
-        val stopIntent = PendingIntent.getService(
-            this, 0,
-            Intent(this, RecordingService::class.java).apply { action = ACTION_STOP },
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("GKK Dual Camera Recorder")
-            .setContentText(text)
-            .setSmallIcon(android.R.drawable.ic_media_play)
-            .setOngoing(true)
-            .setSilent(true)
-            .addAction(android.R.drawable.ic_media_pause, "Stop", stopIntent)
-            .setCategory(NotificationCompat.CATEGORY_SERVICE)
-            .build()
+    private fun stopRecordingAndSelf() {
+        isRunning = false
+        listOf(backRecorder to backSession, frontRecorder to frontSession).forEach { (rec, sess) ->
+            try { sess?.stopRepeating() } catch (_: Exception) {}
+            try { sess?.close() }         catch (_: Exception) {}
+            try { rec?.stop() }           catch (_: Exception) {}
+            try { rec?.release() }        catch (_: Exception) {}
+        }
+        try { backDevice?.close() }  catch (_: Exception) {}
+        try { frontDevice?.close() } catch (_: Exception) {}
+        backRecorder  = null; frontRecorder  = null
+        backSession   = null; frontSession   = null
+        backDevice    = null; frontDevice    = null
+        wakeLock?.release(); wakeLock = null
+        stopForeground(true)
+        stopSelf()
     }
 
-    private fun pushNotification(text: String) {
-        (getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager)
-            .notify(NOTIF_ID, buildNotification(text))
-    }
-
-    private inline fun safeClose(block: () -> Unit) {
-        try { block() } catch (_: Exception) {}
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isRunning) stopRecordingAndSelf()
+        camThread?.quitSafely()
     }
 }

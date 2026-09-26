@@ -154,6 +154,26 @@ jobs:
             -dname "CN=GKK Debug, OU=Android, O=GKK, L=Indore, S=MP, C=IN" \
             2>/dev/null || true
 
+      - name: Ensure androidx.core dependency in build.gradle
+        working-directory: android/app
+        run: |
+          python3 - << 'PYEOF'
+          with open("build.gradle", "r") as f:
+              content = f.read()
+          core_dep = "    implementation 'androidx.core:core-ktx:1.12.0'"
+          if "core-ktx" not in content and "androidx.core" not in content:
+              content = content.replace(
+                  "dependencies {",
+                  "dependencies {\n" + core_dep,
+                  1
+              )
+              with open("build.gradle", "w") as f:
+                  f.write(content)
+              print("✓ androidx.core:core-ktx added to dependencies")
+          else:
+              print("✓ androidx.core already present")
+          PYEOF
+
       - name: Inject stable signing into build.gradle
         working-directory: android/app
         run: |
