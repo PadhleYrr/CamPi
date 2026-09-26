@@ -1,0 +1,204 @@
+name: Build GKK App (Android APK)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build-android:
+    name: 🤖 Build Android APK
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Accept Android SDK licenses
+        run: |
+          ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT:-/usr/local/lib/android/sdk}
+          mkdir -p "$ANDROID_SDK_ROOT/licenses"
+          echo "8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_SDK_ROOT/licenses/android-sdk-license"
+          echo "d56f5187479451eabf01fb78af6dfcb131a6481e" >> "$ANDROID_SDK_ROOT/licenses/android-sdk-license"
+          echo "24333f8a63b6825ea9c5514f83c2829b004d1fee" >> "$ANDROID_SDK_ROOT/licenses/android-sdk-license"
+          echo "84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_SDK_ROOT/licenses/android-sdk-preview-license"
+          echo "33b6a2b64607f11b759f320ef9dff4ae5c47d97a" > "$ANDROID_SDK_ROOT/licenses/google-gdk-license"
+          echo "e9acab5b5fbb560a72cfaecce8946896ff6aab9d" > "$ANDROID_SDK_ROOT/licenses/android-googletv-license"
+          echo "601085b94cd77f0b54ff86406957099ebe79c4d" > "$ANDROID_SDK_ROOT/licenses/android-sdk-arm-dbt-license"
+          echo "859f317696f67ef3d7f30a50a5560e7834b43903" > "$ANDROID_SDK_ROOT/licenses/android-sdk-extra-license"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare web assets
+        run: |
+          mkdir -p www
+          cp index.html www/
+          cp app.js www/
+          cp style.css www/
+          cp sw.js www/
+          cp manifest.json www/
+          cp dualcam.js www/
+          [ -d icons ] && cp -r icons www/ || true
+
+      - name: Install Capacitor CLI
+        run: npm install -g @capacitor/cli
+
+      - name: Add & sync Android platform
+        run: |
+          npx cap add android 2>/dev/null || true
+          npx cap sync android
+
+      # ── Inject DualCam plugin source files ───────────────────────────────
+      - name: Inject DualCam plugin Kotlin sources
+        run: |
+          PKGDIR="android/app/src/main/java/com/gkk/app"
+          mkdir -p "$PKGDIR"
+          # Copy plugin files (overwrites the generated MainActivity.java)
+          cp android-plugin/DualCamRecorderPlugin.kt "$PKGDIR/"
+          cp android-plugin/RecordingService.kt      "$PKGDIR/"
+          cp android-plugin/MainActivity.java        "$PKGDIR/"
+          echo "✓ Plugin files injected:"
+          ls -lh "$PKGDIR/"
+
+      # ── PATCH AndroidManifest.xml — permissions + DualCam service ────────
+      - name: Patch AndroidManifest.xml
+        run: |
+          python3 - << 'PYEOF'
+          import re
+
+          path = "android/app/src/main/AndroidManifest.xml"
+          with open(path, "r") as f:
+              content = f.read()
+
+          permissions = [
+              # Camera (dual)
+              '<uses-permission android:name="android.permission.CAMERA" />',
+              '<uses-feature android:name="android.hardware.camera" android:required="false" />',
+              '<uses-feature android:name="android.hardware.camera.front" android:required="false" />',
+              # Audio
+              '<uses-permission android:name="android.permission.RECORD_AUDIO" />',
+              # Wake lock — screen-off recording
+              '<uses-permission android:name="android.permission.WAKE_LOCK" />',
+              # Foreground service (API 28+) + typed (API 30+)
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />',
+              '<uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />',
+              # Notifications (Android 13+)
+              '<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />',
+              # Storage
+              '<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />',
+              '<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="29" />',
+              '<uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />',
+              # Network
+              '<uses-permission android:name="android.permission.INTERNET" />',
+              '<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />',
+              # Misc
+              '<uses-permission android:name="android.permission.VIBRATE" />',
+          ]
+
+          insert_before = '<application'
+          for perm in permissions:
+              tag_name = re.search(r'android:name="([^"]+)"', perm)
+              if tag_name and tag_name.group(1) not in content:
+                  content = content.replace(insert_before, perm + '\n    ' + insert_before, 1)
+
+          # Inject RecordingService declaration inside <application>
+          service_decl = '''        <service
+            android:name=".RecordingService"
+            android:foregroundServiceType="camera|microphone"
+            android:exported="false" />'''
+          if 'RecordingService' not in content:
+              content = content.replace('</application>', service_decl + '\n    </application>', 1)
+
+          with open(path, "w") as f:
+              f.write(content)
+
+          print("AndroidManifest.xml patched:")
+          for p in permissions:
+              n = re.search(r'android:name="([^"]+)"', p)
+              if n: print(f"  ✓ {n.group(1)}")
+          print("  ✓ RecordingService declared")
+          PYEOF
+
+      # ── Show final manifest ───────────────────────────────────────────────
+      - name: Show AndroidManifest.xml
+        run: |
+          echo "=== Permissions ==="
+          grep -E "uses-permission|uses-feature|RecordingService" android/app/src/main/AndroidManifest.xml
+
+      # ── Stable keystore (same key every build = no reinstall conflict) ───
+      - name: Create stable debug keystore
+        run: |
+          keytool -genkeypair \
+            -keystore android/app/debug.keystore \
+            -storepass android \
+            -alias androiddebugkey \
+            -keypass android \
+            -keyalg RSA \
+            -keysize 2048 \
+            -validity 10000 \
+            -dname "CN=GKK Debug, OU=Android, O=GKK, L=Indore, S=MP, C=IN" \
+            2>/dev/null || true
+
+      - name: Inject stable signing into build.gradle
+        working-directory: android/app
+        run: |
+          python3 - << 'PYEOF'
+          import re
+
+          with open("build.gradle", "r") as f:
+              content = f.read()
+
+          if "stableDebug" not in content:
+              signing_block = """
+              signingConfigs {
+                  stableDebug {
+                      storeFile file("debug.keystore")
+                      storePassword "android"
+                      keyAlias "androiddebugkey"
+                      keyPassword "android"
+                  }
+              }
+          """
+              content = content.replace("    buildTypes {", signing_block + "    buildTypes {")
+              content = re.sub(r'(release\s*\{)', r'release {\n            signingConfig signingConfigs.stableDebug', content)
+              content = re.sub(r'(debug\s*\{)', r'debug {\n            signingConfig signingConfigs.stableDebug', content)
+
+              with open("build.gradle", "w") as f:
+                  f.write(content)
+              print("build.gradle patched.")
+          else:
+              print("Already patched, skipping.")
+          PYEOF
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon
+
+      - name: Collect APK
+        run: |
+          mkdir -p output
+          find android/app/build/outputs/apk -name "*.apk" -exec cp {} output/GKK-latest.apk \;
+          ls -lh output/
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GKK-latest.apk
+          path: output/GKK-latest.apk
+          retention-days: 30
