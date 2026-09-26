@@ -1,0 +1,3990 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GKK — Gumasta Krishi Kendra</title>
+<meta name="theme-color" content="#1a1a2e">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@600;700;800&family=Nunito:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<style>
+/* ==================== THEME SYSTEM ==================== */
+:root {
+  /* Default: Slate Professional */
+  --bg: #f8f9fc;
+  --bg2: #ffffff;
+  --bg3: #f0f2f7;
+  --sidebar: #1e2235;
+  --sidebar-text: #a0aec0;
+  --sidebar-active: #ffffff;
+  --sidebar-active-bg: rgba(255,255,255,0.12);
+  --sidebar-accent: #6c63ff;
+  --primary: #6c63ff;
+  --primary-light: #ede9ff;
+  --primary-dark: #4a42cc;
+  --accent: #ff6584;
+  --success: #43b89c;
+  --warning: #f6c90e;
+  --danger: #ff4d4f;
+  --text: #1a1d2e;
+  --text2: #6b7280;
+  --text3: #9ca3af;
+  --border: #e5e7eb;
+  --border2: #d1d5db;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --card-shadow-hover: 0 8px 30px rgba(108,99,255,0.15);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --font: 'Outfit', sans-serif;
+  --font-display: 'Syne', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+[data-theme="forest"] {
+  --bg: #f5f7f2;
+  --bg2: #ffffff;
+  --bg3: #eef1ea;
+  --sidebar: #1b2b1c;
+  --sidebar-text: #8ab48c;
+  --sidebar-active: #ffffff;
+  --sidebar-active-bg: rgba(255,255,255,0.1);
+  --sidebar-accent: #5aaa5e;
+  --primary: #4a9e52;
+  --primary-light: #e8f5e9;
+  --primary-dark: #2e7d32;
+  --accent: #ff8f00;
+  --success: #43b89c;
+  --warning: #f6c90e;
+  --danger: #e53935;
+  --text: #1a2b1b;
+  --text2: #556b2f;
+  --text3: #8a9e8b;
+  --border: #dde8d8;
+  --border2: #c5d8bf;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --card-shadow-hover: 0 8px 30px rgba(74,158,82,0.18);
+  --font: 'DM Sans', sans-serif;
+  --font-display: 'Playfair Display', serif;
+}
+
+[data-theme="midnight"] {
+  --bg: #0d0f18;
+  --bg2: #151824;
+  --bg3: #1c2030;
+  --sidebar: #0a0c14;
+  --sidebar-text: #6b7a9e;
+  --sidebar-active: #e2e8f0;
+  --sidebar-active-bg: rgba(99,179,237,0.1);
+  --sidebar-accent: #63b3ed;
+  --primary: #63b3ed;
+  --primary-light: rgba(99,179,237,0.12);
+  --primary-dark: #3182ce;
+  --accent: #f687b3;
+  --success: #68d391;
+  --warning: #f6e05e;
+  --danger: #fc8181;
+  --text: #e2e8f0;
+  --text2: #a0aec0;
+  --text3: #718096;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --card-shadow: 0 2px 16px rgba(0,0,0,0.4);
+  --card-shadow-hover: 0 8px 32px rgba(99,179,237,0.2);
+  --font: 'Space Grotesk', sans-serif;
+  --font-display: 'Syne', sans-serif;
+}
+
+[data-theme="warm"] {
+  --bg: #fdf8f0;
+  --bg2: #ffffff;
+  --bg3: #faf0e0;
+  --sidebar: #2d1b0e;
+  --sidebar-text: #c4956b;
+  --sidebar-active: #ffffff;
+  --sidebar-active-bg: rgba(255,255,255,0.1);
+  --sidebar-accent: #e8863a;
+  --primary: #d4692a;
+  --primary-light: #fef3e2;
+  --primary-dark: #b8451a;
+  --accent: #6c3dbf;
+  --success: #4caf50;
+  --warning: #ffc107;
+  --danger: #f44336;
+  --text: #2d1b0e;
+  --text2: #7c4f2a;
+  --text3: #b8865a;
+  --border: #e8d5b0;
+  --border2: #d4b88a;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  --card-shadow-hover: 0 8px 30px rgba(212,105,42,0.18);
+  --font: 'Nunito', sans-serif;
+  --font-display: 'Playfair Display', serif;
+}
+
+[data-theme="steel"] {
+  --bg: #f0f4f8;
+  --bg2: #ffffff;
+  --bg3: #e8edf3;
+  --sidebar: #1a2332;
+  --sidebar-text: #8fa3bd;
+  --sidebar-active: #ffffff;
+  --sidebar-active-bg: rgba(255,255,255,0.08);
+  --sidebar-accent: #4fc3f7;
+  --primary: #0288d1;
+  --primary-light: #e1f5fe;
+  --primary-dark: #01579b;
+  --accent: #ff7043;
+  --success: #4caf50;
+  --warning: #ffb300;
+  --danger: #f44336;
+  --text: #1a2332;
+  --text2: #546e7a;
+  --text3: #90a4ae;
+  --border: #cfd8e0;
+  --border2: #b0bec5;
+  --card-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  --card-shadow-hover: 0 8px 30px rgba(2,136,209,0.18);
+  --font: 'DM Sans', sans-serif;
+  --font-display: 'Outfit', sans-serif;
+}
+
+/* ==================== RESET & BASE ==================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow-x: hidden;
+  overflow-y: auto;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar {
+  width: 240px;
+  height: 100%;
+  height: 100dvh;
+  background: var(--sidebar);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  left: 0; top: 0; bottom: 0;
+  z-index: 100;
+  transition: width 0.3s, transform 0.3s;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+
+.sidebar-logo {
+  padding: 24px 20px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.logo-icon {
+  width: 38px; height: 38px;
+  background: var(--sidebar-accent);
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-family: var(--font-display);
+  color: white;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.logo-sub {
+  color: var(--sidebar-text);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.5px;
+}
+
+.sidebar-section {
+  padding: 16px 12px 4px;
+}
+
+.sidebar-section-label {
+  color: var(--sidebar-text);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  padding: 0 8px;
+  margin-bottom: 4px;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  color: var(--sidebar-text);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: all 0.2s;
+  margin-bottom: 2px;
+  white-space: nowrap;
+  position: relative;
+}
+
+.nav-item:hover { color: white; background: rgba(255,255,255,0.06); }
+
+.nav-item.active {
+  color: var(--sidebar-active);
+  background: var(--sidebar-active-bg);
+  font-weight: 600;
+}
+
+.nav-item.active::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 25%; bottom: 25%;
+  width: 3px;
+  background: var(--sidebar-accent);
+  border-radius: 0 3px 3px 0;
+}
+
+.nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+
+.nav-badge {
+  margin-left: auto;
+  background: var(--sidebar-accent);
+  color: white;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  min-width: 20px;
+  text-align: center;
+}
+
+.nav-new {
+  margin-left: auto;
+  background: var(--accent);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  letter-spacing: 0.5px;
+}
+
+/* ==================== MAIN CONTENT ==================== */
+.main {
+  margin-left: 240px;
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  flex-shrink: 0;
+}
+
+.topbar-title {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topbar-btn {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px;
+  color: var(--text2);
+  transition: all 0.2s;
+}
+.topbar-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+.page-content {
+  flex: 1;
+  padding: 24px;
+  display: none;
+}
+
+.page-content.active { display: block; }
+
+/* ==================== CARDS & GRIDS ==================== */
+.card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  box-shadow: var(--card-shadow);
+  transition: box-shadow 0.2s;
+}
+.card:hover { box-shadow: var(--card-shadow-hover); }
+
+.card-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.card-body { padding: 20px; }
+
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.grid-12 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* ==================== STAT CARDS ==================== */
+.stat-card {
+  background: var(--bg2);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 20px;
+  box-shadow: var(--card-shadow);
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.stat-card::after {
+  content: '';
+  position: absolute;
+  top: -30px; right: -30px;
+  width: 80px; height: 80px;
+  border-radius: 50%;
+  background: var(--primary);
+  opacity: 0.06;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: var(--card-shadow-hover); }
+
+.stat-icon {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  margin-bottom: 12px;
+}
+.stat-label { font-size: 12px; color: var(--text2); font-weight: 500; margin-bottom: 4px; }
+.stat-value { font-size: 24px; font-weight: 700; color: var(--text); font-family: var(--font-mono); }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* ==================== FORMS & INPUTS ==================== */
+.form-group { margin-bottom: 16px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; display: block; text-transform: uppercase; letter-spacing: 0.5px; }
+
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--bg3);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 14px;
+  transition: all 0.2s;
+  outline: none;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--primary);
+  background: var(--bg2);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+.form-input::placeholder { color: var(--text3); }
+
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+
+/* ==================== BUTTONS ==================== */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13.5px;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.btn-primary { background: var(--primary); color: white; }
+.btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+.btn-outline:hover { background: var(--primary-light); }
+.btn-danger { background: var(--danger); color: white; }
+.btn-success { background: var(--success); color: white; }
+.btn-ghost { background: var(--bg3); color: var(--text2); border: 1px solid var(--border); }
+.btn-ghost:hover { background: var(--border); }
+.btn-sm { padding: 6px 12px; font-size: 12px; }
+.btn-block { width: 100%; justify-content: center; }
+.btn-icon { width: 36px; height: 36px; padding: 0; justify-content: center; border-radius: 8px; }
+
+/* ==================== TAGS / BADGES ==================== */
+.badge {
+  display: inline-flex; align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-success { background: rgba(67,184,156,0.12); color: var(--success); }
+.badge-danger { background: rgba(255,77,79,0.12); color: var(--danger); }
+.badge-warning { background: rgba(246,201,14,0.15); color: #b8860b; }
+.badge-primary { background: var(--primary-light); color: var(--primary); }
+
+/* ==================== TABLE ==================== */
+table { width: 100%; border-collapse: collapse; }
+th { padding: 10px 14px; font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.7px; text-align: left; background: var(--bg3); }
+td { padding: 12px 14px; font-size: 13.5px; color: var(--text); border-bottom: 1px solid var(--border); }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: var(--bg3); }
+
+/* Table scroll wrapper for mobile */
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+/* Mobile order cards (shown instead of table on phones) */
+.order-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--border);
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.order-card:last-child { border-bottom: none; }
+.order-card-left { flex: 1; min-width: 0; }
+.order-card-id { font-family: var(--font-mono); font-weight: 700; font-size: 13px; }
+.order-card-customer { font-size: 13px; font-weight: 500; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.order-card-meta { font-size: 11px; color: var(--text3); margin-top: 2px; }
+.order-card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
+.order-card-total { font-family: var(--font-mono); font-size: 15px; font-weight: 700; }
+.order-card-actions { display: flex; gap: 6px; align-items: center; }
+
+/* ==================== MODAL ==================== */
+.modal-overlay {
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.45);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border-radius: 18px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+  animation: slideUp 0.25s ease;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+.modal-wide { max-width: 600px; }
+.modal-header {
+  padding: 20px 24px 16px;
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+}
+.modal-title { font-size: 17px; font-weight: 700; }
+.modal-close {
+  width: 32px; height: 32px;
+  border-radius: 8px; border: 1px solid var(--border);
+  background: var(--bg3); cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; color: var(--text2);
+  transition: all 0.2s;
+}
+.modal-close:hover { background: var(--danger); color: white; border-color: var(--danger); }
+.modal-body { padding: 24px; }
+.modal-footer {
+  padding: 16px 24px;
+  border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==================== PILL TABS ==================== */
+.pill-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--bg3);
+  padding: 4px;
+  border-radius: 10px;
+  width: fit-content;
+}
+.pill-tab {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text2);
+  transition: all 0.2s;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+}
+.pill-tab.active { background: var(--bg2); color: var(--primary); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+/* ==================== DASHBOARD ==================== */
+#page-dashboard {}
+
+.greeting-banner {
+  background: linear-gradient(135deg, var(--sidebar) 0%, var(--primary-dark) 100%);
+  border-radius: var(--radius);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+.greeting-banner::before {
+  content: '🌿';
+  position: absolute;
+  right: 100px; top: -10px;
+  font-size: 80px;
+  opacity: 0.08;
+}
+.greeting-banner::after {
+  content: '';
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 200px;
+  background: radial-gradient(ellipse at right, rgba(255,255,255,0.07) 0%, transparent 70%);
+}
+.greeting-text { font-size: 22px; font-weight: 700; font-family: var(--font-display); }
+.greeting-sub { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+
+.quick-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+.quick-btn {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 18px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  transition: all 0.2s;
+  font-family: var(--font);
+}
+.quick-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); transform: translateY(-1px); }
+.quick-btn-icon { font-size: 16px; }
+
+/* ==================== BILLING ==================== */
+#page-billing .billing-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.product-search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cart-item:last-child { border-bottom: none; }
+.cart-item-name { flex: 1; font-size: 13.5px; font-weight: 500; }
+.cart-item-price { font-family: var(--font-mono); font-size: 13px; color: var(--text2); min-width: 80px; text-align: right; }
+
+.qty-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.qty-btn {
+  width: 26px; height: 26px;
+  border-radius: 6px;
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  cursor: pointer;
+  font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--text);
+  transition: all 0.15s;
+}
+.qty-btn:hover { background: var(--primary-light); border-color: var(--primary); color: var(--primary); }
+.qty-val { min-width: 28px; text-align: center; font-size: 14px; font-weight: 600; }
+
+.bill-summary {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--card-shadow);
+  position: sticky;
+  top: 80px;
+}
+
+.bill-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 7px 0;
+  font-size: 13.5px;
+  color: var(--text2);
+}
+.bill-line.total {
+  border-top: 2px solid var(--border);
+  margin-top: 8px;
+  padding-top: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+  font-family: var(--font-mono);
+}
+
+.discount-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 10px 0;
+}
+.discount-type-toggle {
+  display: flex;
+  border: 1.5px solid var(--border2);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.disc-type-btn {
+  padding: 7px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  background: transparent;
+  color: var(--text2);
+  font-family: var(--font);
+  transition: all 0.15s;
+}
+.disc-type-btn.active { background: var(--primary); color: white; }
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+.pay-btn {
+  padding: 10px 6px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
+  background: var(--bg3);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+  transition: all 0.2s;
+  font-family: var(--font);
+  color: var(--text);
+}
+.pay-btn:hover, .pay-btn.active { border-color: var(--primary); background: var(--primary-light); color: var(--primary); }
+.pay-btn .pay-icon { font-size: 20px; display: block; margin-bottom: 3px; }
+
+/* Buyer Info Box */
+.buyer-info-box {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 14px;
+}
+.buyer-info-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.buyer-photo-upload {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.buyer-photo-circle {
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  cursor: pointer;
+  border: 2px dashed var(--border2);
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: border-color 0.2s;
+}
+.buyer-photo-circle:hover { border-color: var(--primary); }
+.buyer-photo-circle img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ==================== UDHAR / KHATA ==================== */
+.udhar-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 10px;
+}
+.udhar-card:hover { box-shadow: var(--card-shadow-hover); transform: translateX(3px); }
+
+.udhar-avatar {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.udhar-avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+.udhar-info { flex: 1; }
+.udhar-name { font-size: 15px; font-weight: 600; }
+.udhar-phone { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.udhar-amount { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--danger); }
+.udhar-date { font-size: 11px; color: var(--text3); margin-top: 2px; text-align: right; }
+
+/* ==================== PRODUCTS ==================== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.product-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+}
+.product-card:hover { box-shadow: var(--card-shadow-hover); transform: translateY(-2px); }
+.product-card.out-of-stock { opacity: 0.6; }
+.product-cat { font-size: 11px; color: var(--text3); margin-bottom: 6px; }
+.product-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+.product-price { font-family: var(--font-mono); font-size: 16px; font-weight: 700; color: var(--primary); }
+.product-buy-price { font-size: 11px; color: var(--text3); }
+.product-stock { font-size: 12px; color: var(--text2); margin-top: 6px; }
+.product-stock.low { color: var(--warning); }
+.product-stock.out { color: var(--danger); }
+.product-add-btn {
+  position: absolute;
+  bottom: 12px; right: 12px;
+  width: 30px; height: 30px;
+  background: var(--primary);
+  color: white;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.product-add-btn:hover { background: var(--primary-dark); transform: scale(1.1); }
+
+/* ==================== THEME SWITCHER PANEL ==================== */
+.theme-panel {
+  position: fixed;
+  right: -320px;
+  top: 0; bottom: 0;
+  width: 320px;
+  background: var(--bg2);
+  border-left: 1px solid var(--border);
+  box-shadow: -4px 0 20px rgba(0,0,0,0.1);
+  z-index: 200;
+  transition: right 0.3s;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.theme-panel.open { right: 0; }
+
+.theme-panel-header {
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.theme-panel-title { font-size: 16px; font-weight: 700; }
+.theme-panel-body { padding: 20px; flex: 1; }
+
+.theme-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  border: 2px solid var(--border);
+  margin-bottom: 10px;
+  transition: all 0.2s;
+}
+.theme-option:hover, .theme-option.active { border-color: var(--primary); background: var(--primary-light); }
+.theme-preview {
+  width: 40px; height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+.theme-preview-sidebar { flex: 2; }
+.theme-preview-content { flex: 3; }
+.theme-name { font-size: 14px; font-weight: 600; }
+.theme-desc { font-size: 11px; color: var(--text2); }
+
+.custom-theme-section {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border);
+}
+.custom-theme-title { font-size: 13px; font-weight: 700; color: var(--text2); margin-bottom: 14px; }
+
+.color-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.color-row label { font-size: 12.5px; color: var(--text2); font-weight: 500; }
+.color-row input[type="color"] {
+  width: 36px; height: 28px;
+  border: 2px solid var(--border2);
+  border-radius: 6px;
+  cursor: pointer;
+  background: none;
+  padding: 2px;
+}
+
+/* ==================== SETTINGS ==================== */
+.settings-section {
+  margin-bottom: 24px;
+}
+.settings-section-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 12px;
+}
+.settings-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.settings-row {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+}
+.settings-row:last-child { border-bottom: none; }
+.settings-row-label { font-size: 14px; font-weight: 500; }
+.settings-row-desc { font-size: 12px; color: var(--text2); margin-top: 2px; }
+
+/* API Key input */
+.api-key-wrapper {
+  position: relative;
+  flex: 1;
+  max-width: 300px;
+}
+.api-key-input {
+  width: 100%;
+  padding: 8px 36px 8px 12px;
+  border: 1.5px solid var(--border2);
+  border-radius: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  background: var(--bg3);
+  color: var(--text);
+  outline: none;
+}
+.api-key-input:focus { border-color: var(--primary); }
+.api-key-toggle {
+  position: absolute;
+  right: 8px; top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer; font-size: 14px;
+  background: none; border: none;
+  color: var(--text2);
+}
+
+/* ==================== PROFIT PAGE ==================== */
+.profit-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 600px) {
+  .profit-summary { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+}
+
+.calc-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+}
+.calc-result {
+  background: var(--primary-light);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-top: 12px;
+  font-family: var(--font-mono);
+}
+.calc-result-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 13px; }
+.calc-result-row:last-child { margin-bottom: 0; font-weight: 700; color: var(--primary); }
+
+/* ==================== AI ASSISTANT ==================== */
+.ai-layout {
+  display: grid;
+  grid-template-columns: 1fr 280px;
+  gap: 20px;
+  height: calc(100vh - 112px);
+}
+.chat-window {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.chat-msg {
+  max-width: 80%;
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.chat-msg.user { background: var(--primary); color: white; margin-left: auto; border-radius: 14px 14px 4px 14px; }
+.chat-msg.ai { background: var(--bg3); color: var(--text); border-radius: 14px 14px 14px 4px; }
+.chat-input-row {
+  padding: 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.chat-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  background: var(--bg3);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 13.5px;
+  outline: none;
+}
+.chat-input:focus { border-color: var(--primary); }
+
+/* Mobile AI tabs */
+.ai-tab-bar {
+  display: none;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  gap: 8px;
+}
+.ai-tab-btn {
+  flex: 1;
+  padding: 9px 10px;
+  border-radius: 8px;
+  border: 1.5px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.ai-tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+
+.ai-quick-btns {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.ai-quick-btn {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  margin-bottom: 8px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12.5px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--text);
+  font-family: var(--font);
+  transition: all 0.2s;
+}
+.ai-quick-btn:hover { background: var(--primary-light); color: var(--primary); border-color: var(--primary); }
+
+/* ==================== AI PROVIDER TOGGLE ==================== */
+.ai-provider-toggle {
+  display: flex;
+  background: var(--bg3);
+  border: 1.5px solid var(--border2);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.ai-prov-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--text2);
+  font-family: var(--font);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+.ai-prov-btn.active {
+  background: var(--bg2);
+  color: var(--primary);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.12);
+}
+.ai-prov-btn:not(.active):hover { color: var(--text); background: rgba(255,255,255,0.5); }
+
+/* ==================== NOTIFICATIONS ==================== */
+.toast {
+  position: fixed;
+  bottom: 24px; right: 24px;
+  background: var(--text);
+  color: var(--bg2);
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-size: 13.5px;
+  font-weight: 500;
+  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  animation: toastIn 0.3s ease, toastOut 0.3s ease 2.7s forwards;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+@keyframes toastIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; } }
+
+/* ==================== MOBILE TOPBAR ==================== */
+.mobile-menu-btn {
+  display: none;
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--text);
+}
+
+/* ==================== RESPONSIVE ==================== */
+@media (max-width: 900px) {
+  .sidebar {
+    transform: translateX(-100%);
+    height: 100vh;
+    height: 100dvh;
+    max-height: 100vh;
+    max-height: 100dvh;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .mobile-menu-btn { display: flex; }
+  .grid-4 { grid-template-columns: repeat(2, 1fr); }
+  .profit-summary { grid-template-columns: repeat(2, 1fr); }
+  #page-billing .billing-layout { grid-template-columns: 1fr; }
+  .ai-layout { grid-template-columns: 1fr; height: auto; }
+  .ai-layout > div:last-child { display: none; }
+  .ai-layout > div:last-child.ai-panel-visible { display: flex; flex-direction: column; gap: 16px; }
+  .ai-tab-bar { display: flex; }
+  .chat-window { height: calc(100vh - 200px); min-height: 400px; }
+  .grid-12 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 600px) {
+  .grid-4, .grid-3, .grid-2, .grid-12 { grid-template-columns: 1fr; }
+  .page-content { padding: 16px; }
+}
+
+/* ==================== EMPTY STATE ==================== */
+.empty-state {
+  text-align: center;
+  padding: 48px 24px;
+  color: var(--text3);
+}
+.empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+.empty-state-text { font-size: 15px; font-weight: 500; margin-bottom: 6px; color: var(--text2); }
+.empty-state-sub { font-size: 13px; }
+
+/* ==================== OVERLAY for mobile sidebar ==================== */
+.sidebar-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 99;
+}
+.sidebar-overlay.open { display: block; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-icon">🌿</div>
+    <div>
+      <div class="logo-text">GKK</div>
+      <div class="logo-sub">Gumasta Krishi Kendra</div>
+    </div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <div class="nav-item active" onclick="navTo('dashboard', this)"><span class="nav-icon">🏠</span> Dashboard</div>
+    <div class="nav-item" onclick="navTo('billing', this)"><span class="nav-icon">🧾</span> New Bill / बिल</div>
+    <div class="nav-item" onclick="navTo('orders', this)"><span class="nav-icon">📋</span> Orders / ऑर्डर <span class="nav-badge" id="orders-badge">0</span></div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Stock / स्टॉक</div>
+    <div class="nav-item" onclick="navTo('products', this)"><span class="nav-icon">📦</span> Products / उत्पाद</div>
+    <div class="nav-item" onclick="navTo('stock', this)"><span class="nav-icon">📊</span> Stock <span class="nav-badge" id="low-stock-badge">0</span></div>
+    <div class="nav-item" onclick="navTo('returns', this)"><span class="nav-icon">🔄</span> Returns / वापसी</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Finance / हिसाब</div>
+    <div class="nav-item" onclick="navTo('udhar', this)"><span class="nav-icon">👥</span> Udhar / उधार</div>
+    <div class="nav-item" onclick="navTo('profit', this)"><span class="nav-icon">💰</span> Profit & Loss</div>
+    <div class="nav-item" onclick="navTo('reports', this)"><span class="nav-icon">📈</span> Reports / रिपोर्ट</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">AI सहायक</div>
+    <div class="nav-item" onclick="navTo('ai', this)"><span class="nav-icon">🤖</span> AI Assistant <span class="nav-new">NEW</span></div>
+    <div class="nav-item" onclick="navTo('disease', this)"><span class="nav-icon">🔬</span> Disease Scanner <span class="nav-new">AI</span></div>
+    <div class="nav-item" onclick="navTo('camera', this)"><span class="nav-icon">📹</span> Dual Camera Rec <span class="nav-new">NEW</span></div>
+  </div>
+
+  <div class="sidebar-section" style="padding-bottom: 24px;">
+    <div class="nav-item" onclick="navTo('settings', this)"><span class="nav-icon">⚙️</span> Settings</div>
+  </div>
+</aside>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="page-title">Dashboard</div>
+    </div>
+    <div class="topbar-right">
+      <button class="topbar-btn" onclick="openThemePanel()" title="Change Theme">🎨</button>
+      <button class="topbar-btn" onclick="navTo('billing', document.querySelector('.nav-item:nth-child(2)'))" title="New Bill">🧾</button>
+      <button class="topbar-btn" onclick="openModal('add-product-modal')" title="Add Product">➕</button>
+    </div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="page-content active" id="page-dashboard">
+    <div class="greeting-banner">
+      <div>
+        <div class="greeting-text" id="greeting-text">नमस्ते! 🙏</div>
+        <div class="greeting-sub" id="greeting-date"></div>
+      </div>
+    </div>
+
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card">
+        <div class="stat-icon">💰</div>
+        <div class="stat-label">आज की बिक्री</div>
+        <div class="stat-value" id="stat-sales">₹0</div>
+        <div class="stat-sub">Today's Sales</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(67,184,156,0.15)">📦</div>
+        <div class="stat-label">कुल उत्पाद</div>
+        <div class="stat-value" id="stat-products">0</div>
+        <div class="stat-sub">Total Products</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(246,201,14,0.15)">📋</div>
+        <div class="stat-label">आज के बिल</div>
+        <div class="stat-value" id="stat-bills">0</div>
+        <div class="stat-sub">Today's Bills</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(255,77,79,0.12)">⚠️</div>
+        <div class="stat-label">कम स्टॉक</div>
+        <div class="stat-value" id="stat-low-stock">0</div>
+        <div class="stat-sub">Low Stock Items</div>
+      </div>
+    </div>
+
+    <div class="grid-12" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">आज का लाभ / Today's Profit</span>
+        </div>
+        <div class="card-body">
+          <div style="font-size:28px;font-weight:800;color:var(--success);font-family:var(--font-mono)" id="dash-profit">₹0</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px" id="dash-margin">Margin: 0%</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">उधार बाकी / Pending Udhar</span>
+          <button class="btn btn-sm btn-outline" onclick="navTo('udhar',null)">View All</button>
+        </div>
+        <div class="card-body">
+          <div style="font-size:28px;font-weight:800;color:var(--danger);font-family:var(--font-mono)" id="dash-udhar">₹0</div>
+          <div style="font-size:13px;color:var(--text2);margin-top:4px" id="dash-udhar-count">0 customers</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions" style="margin-bottom:20px">
+      <button class="quick-btn" onclick="navTo('billing',null)"><span class="quick-btn-icon">🧾</span> New Bill</button>
+      <button class="quick-btn" onclick="openModal('add-product-modal')"><span class="quick-btn-icon">➕</span> Add Product</button>
+      <button class="quick-btn" onclick="navTo('ai',null)"><span class="quick-btn-icon">🤖</span> AI Help</button>
+      <button class="quick-btn" onclick="navTo('disease',null)"><span class="quick-btn-icon">🔬</span> Scan Disease</button>
+      <button class="quick-btn" onclick="navTo('stock',null)"><span class="quick-btn-icon">⚠️</span> Low Stock</button>
+    </div>
+
+    <div class="grid-12">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Recent Bills</span>
+          <a style="font-size:12px;color:var(--primary);cursor:pointer" onclick="navTo('orders',null)">See All →</a>
+        </div>
+        <div id="recent-bills-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">🧾</div>
+            <div class="empty-state-text">कोई बिल नहीं</div>
+            <div class="empty-state-sub">पहला बिल बनाएं!</div>
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Top Udhar Customers</span>
+          <a style="font-size:12px;color:var(--primary);cursor:pointer" onclick="navTo('udhar',null)">See All →</a>
+        </div>
+        <div id="top-udhar-list">
+          <div class="empty-state">
+            <div class="empty-state-icon">👍</div>
+            <div class="empty-state-text">कोई उधार नहीं</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BILLING -->
+  <div class="page-content" id="page-billing">
+    <div class="billing-layout">
+      <!-- Left: Product List -->
+      <div>
+        <div class="product-search-bar" style="flex-wrap:wrap">
+          <input class="form-input" id="bill-search" placeholder="🔍 Search products / उत्पाद खोजें..." oninput="renderBillProducts()">
+          <select class="form-select" style="width:140px" id="bill-cat-filter" onchange="renderBillProducts()">
+            <option value="">All Categories</option>
+            <option>Seeds / बीज</option>
+            <option>Fertilizer / खाद</option>
+            <option>Pesticide / कीटनाशक</option>
+            <option>Herbicide / खरपतवार</option>
+            <option>Tools / उपकरण</option>
+            <option>Irrigation / सिंचाई</option>
+            <option>Other / अन्य</option>
+          </select>
+        </div>
+        <div class="product-grid" id="bill-products-grid"></div>
+      </div>
+
+      <!-- Right: Cart + Summary -->
+      <div>
+        <!-- Buyer Info Box -->
+        <div class="bill-summary" style="margin-bottom:16px;position:static">
+          <div class="buyer-info-title">
+            <span>👤</span> Buyer / ग्राहक की जानकारी
+          </div>
+          <div class="buyer-photo-upload">
+            <div class="buyer-photo-circle" id="buyer-photo-circle" onclick="document.getElementById('buyer-photo-input').click()">
+              <span id="buyer-photo-placeholder">📷</span>
+              <img id="buyer-photo-img" style="display:none" alt="buyer">
+            </div>
+            <div style="flex:1">
+              <div style="font-size:11px;color:var(--text3);margin-bottom:4px">Click to add photo</div>
+              <button class="btn btn-sm btn-ghost" onclick="document.getElementById('buyer-photo-input').click()">Upload Photo</button>
+            </div>
+            <input type="file" id="buyer-photo-input" accept="image/*" style="display:none" onchange="setBuyerPhoto(this)">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Name</label>
+              <input class="form-input" id="buyer-name" placeholder="ग्राहक का नाम">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Phone</label>
+              <input class="form-input" id="buyer-phone" placeholder="मोबाइल नंबर" type="tel">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Address (Optional)</label>
+            <input class="form-input" id="buyer-address" placeholder="पता (वैकल्पिक)">
+          </div>
+          <div class="form-group" style="margin-bottom:0">
+            <label class="form-label">Notes</label>
+            <input class="form-input" id="buyer-notes" placeholder="कोई नोट...">
+          </div>
+        </div>
+
+        <!-- Cart -->
+        <div class="bill-summary">
+          <div style="font-size:14px;font-weight:700;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between">
+            🛒 Cart
+            <button class="btn btn-sm btn-ghost" onclick="clearCart()">🗑 Clear</button>
+          </div>
+          <div id="cart-items-list">
+            <div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Cart is empty — उत्पाद जोड़ें</div>
+          </div>
+
+          <div class="bill-line" style="margin-top:8px">
+            <span>Subtotal</span>
+            <span id="bill-subtotal" style="font-family:var(--font-mono)">₹0</span>
+          </div>
+
+          <!-- Discount Row -->
+          <div style="padding:8px 0;border-bottom:1px solid var(--border)">
+            <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px">Discount / छूट</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <div class="discount-type-toggle">
+                <button class="disc-type-btn active" id="disc-pct-btn" onclick="setDiscType('pct')">%</button>
+                <button class="disc-type-btn" id="disc-flat-btn" onclick="setDiscType('flat')">₹</button>
+              </div>
+              <input class="form-input" id="discount-input" type="number" min="0" placeholder="0" style="flex:1" oninput="updateBillTotals()">
+              <span style="font-size:12px;color:var(--text2);min-width:50px" id="disc-preview">= ₹0</span>
+            </div>
+          </div>
+
+          <div class="bill-line total">
+            <span>TOTAL</span>
+            <span id="bill-total">₹0</span>
+          </div>
+          <div class="bill-line" style="color:var(--success);font-weight:600">
+            <span>Profit 💹</span>
+            <span id="bill-profit" style="font-family:var(--font-mono)">₹0</span>
+          </div>
+
+          <div class="payment-methods">
+            <button class="pay-btn active" id="pay-cash" onclick="setPayment('cash')">
+              <span class="pay-icon">💵</span>Cash
+            </button>
+            <button class="pay-btn" id="pay-udhar" onclick="setPayment('udhar')">
+              <span class="pay-icon">📒</span>Udhar
+            </button>
+            <button class="pay-btn" id="pay-upi" onclick="setPayment('upi')">
+              <span class="pay-icon">📱</span>UPI
+            </button>
+          </div>
+
+          <button class="btn btn-primary btn-block" style="margin-top:14px" onclick="generateBill()">
+            🧾 Generate Bill / बिल बनाएं
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDERS -->
+  <div class="page-content" id="page-orders">
+    <div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;overflow-x:auto;padding-bottom:4px">
+      <div class="pill-tabs" style="flex-shrink:0">
+        <button class="pill-tab active" onclick="filterOrders('all', this)">All</button>
+        <button class="pill-tab" onclick="filterOrders('today', this)">Today</button>
+        <button class="pill-tab" onclick="filterOrders('week', this)">Week</button>
+        <button class="pill-tab" onclick="filterOrders('month', this)">Month</button>
+      </div>
+      <div class="pill-tabs" style="flex-shrink:0">
+        <button class="pill-tab active" onclick="filterOrdersPayment('all', this)">All</button>
+        <button class="pill-tab" onclick="filterOrdersPayment('cash', this)">Cash</button>
+        <button class="pill-tab" onclick="filterOrdersPayment('udhar', this)">Udhar</button>
+        <button class="pill-tab" onclick="filterOrdersPayment('upi', this)">UPI</button>
+      </div>
+    </div>
+    <div class="card">
+      <div id="orders-table-wrap">
+        <div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">कोई ऑर्डर नहीं</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRODUCTS -->
+  <div class="page-content" id="page-products">
+    <div style="display:flex;gap:10px;margin-bottom:16px;align-items:center;flex-wrap:wrap">
+      <input class="form-input" id="prod-search" placeholder="🔍 Search products..." oninput="renderProducts()" style="flex:1;min-width:140px">
+      <select class="form-select" id="prod-cat" onchange="renderProducts()" style="flex:1;min-width:130px;max-width:180px">
+        <option value="">All Categories</option>
+        <option>Seeds / बीज</option>
+        <option>Fertilizer / खाद</option>
+        <option>Pesticide / कीटनाशक</option>
+        <option>Herbicide / खरपतवार</option>
+        <option>Tools / उपकरण</option>
+        <option>Irrigation / सिंचाई</option>
+        <option>Other / अन्य</option>
+      </select>
+      <button class="btn btn-primary" onclick="openModal('add-product-modal')">➕ Add</button>
+    </div>
+    <div class="product-grid" id="products-grid"></div>
+  </div>
+
+  <!-- STOCK -->
+  <div class="page-content" id="page-stock">
+    <div class="grid-3" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-icon">📦</div><div class="stat-label">Total Products</div><div class="stat-value" id="stock-total">0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(246,201,14,0.15)">⚠️</div><div class="stat-label">Low Stock</div><div class="stat-value" id="stock-low">0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(255,77,79,0.12)">❌</div><div class="stat-label">Out of Stock</div><div class="stat-value" id="stock-out">0</div></div>
+    </div>
+    <div class="card">
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Product</th><th>Stock</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody id="stock-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- RETURNS -->
+  <div class="page-content" id="page-returns">
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card card-body">
+        <div style="font-size:15px;font-weight:700;margin-bottom:16px">New Return / नई वापसी</div>
+        <div class="form-group">
+          <label class="form-label">Bill Number</label>
+          <input class="form-input" id="ret-bill" placeholder="Bill #">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Customer Name</label>
+          <input class="form-input" id="ret-customer" placeholder="Customer name">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Product</label>
+          <input class="form-input" id="ret-product" placeholder="Product name">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Quantity</label>
+            <input class="form-input" id="ret-qty" type="number" min="1" placeholder="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Reason</label>
+            <select class="form-select" id="ret-reason">
+              <option>Damaged / खराब</option>
+              <option>Wrong product</option>
+              <option>Customer changed mind</option>
+              <option>Expired / एक्सपायर्ड</option>
+              <option>Other</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-block" onclick="processReturn()">Process Return</button>
+      </div>
+        <div class="card">
+        <div class="card-header"><span class="card-title">Return History</span></div>
+        <div id="returns-list">
+          <div class="empty-state"><div class="empty-state-icon">🔄</div><div class="empty-state-text">No returns yet</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- UDHAR -->
+  <div class="page-content" id="page-udhar">
+    <div class="grid-2" style="margin-bottom:16px">
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(255,77,79,0.12)">💸</div><div class="stat-label">Total Pending</div><div class="stat-value" id="udhar-total-amount">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon">👥</div><div class="stat-label">Customers</div><div class="stat-value" id="udhar-total-customers">0</div></div>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-bottom:14px">
+      <button class="btn btn-primary" onclick="openModal('add-udhar-modal')">➕ Add Udhar</button>
+    </div>
+    <div id="udhar-list">
+      <div class="empty-state"><div class="empty-state-icon">👍</div><div class="empty-state-text">कोई उधार नहीं</div></div>
+    </div>
+  </div>
+
+  <!-- PROFIT & LOSS -->
+  <div class="page-content" id="page-profit">
+    <div class="profit-summary">
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Revenue / आय</div><div class="stat-value" id="pl-revenue">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(255,77,79,0.12)">📉</div><div class="stat-label">Cost / लागत</div><div class="stat-value" id="pl-cost">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(67,184,156,0.15)">📈</div><div class="stat-label">Net Profit</div><div class="stat-value" id="pl-profit">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon">%</div><div class="stat-label">Margin</div><div class="stat-value" id="pl-margin">0%</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="stat-card"><div class="stat-label">Total Bills</div><div class="stat-value" id="pl-bills">0</div></div>
+      <div class="stat-card"><div class="stat-label">Avg Bill Value</div><div class="stat-value" id="pl-avg">₹0</div></div>
+    </div>
+    <div class="calc-card" style="margin-top:20px">
+      <div style="font-size:15px;font-weight:700;margin-bottom:14px">🧮 Quick Profit Calculator</div>
+      <div class="form-row-3">
+        <div class="form-group">
+          <label class="form-label">Buy Price (₹)</label>
+          <input class="form-input" id="calc-buy" type="number" placeholder="0" oninput="updateCalc()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sell Price (₹)</label>
+          <input class="form-input" id="calc-sell" type="number" placeholder="0" oninput="updateCalc()">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Quantity</label>
+          <input class="form-input" id="calc-qty" type="number" placeholder="1" oninput="updateCalc()">
+        </div>
+      </div>
+      <div class="calc-result" id="calc-result">
+        <div class="calc-result-row"><span>Profit per unit:</span><span>₹0</span></div>
+        <div class="calc-result-row"><span>Margin:</span><span>0%</span></div>
+        <div class="calc-result-row"><span>Total Profit:</span><span>₹0</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- REPORTS -->
+  <div class="page-content" id="page-reports">
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center">
+      <div class="pill-tabs" style="flex-shrink:0">
+        <button class="pill-tab active" onclick="setReportPeriod('week',this)">Week</button>
+        <button class="pill-tab" onclick="setReportPeriod('month',this)">Month</button>
+        <button class="pill-tab" onclick="setReportPeriod('all',this)">All Time</button>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-outline btn-sm" onclick="exportData()">📥 JSON</button>
+        <button class="btn btn-primary btn-sm" onclick="exportPDF()">📄 PDF Report</button>
+        <button class="btn btn-outline btn-sm" onclick="document.getElementById('import-file').click()">📤 Import</button>
+        <input type="file" id="import-file" accept=".json" style="display:none" onchange="importData(this)">
+      </div>
+    </div>
+    <div class="grid-4" style="margin-bottom:20px">
+      <div class="stat-card"><div class="stat-icon">💰</div><div class="stat-label">Revenue</div><div class="stat-value" id="rep-revenue">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(67,184,156,0.15)">📈</div><div class="stat-label">Profit</div><div class="stat-value" id="rep-profit">₹0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(246,201,14,0.15)">🧾</div><div class="stat-label">Bills</div><div class="stat-value" id="rep-bills">0</div></div>
+      <div class="stat-card"><div class="stat-icon" style="background:rgba(255,77,79,0.12)">📊</div><div class="stat-label">Margin</div><div class="stat-value" id="rep-margin">0%</div></div>
+    </div>
+    <div class="grid-2" style="margin-bottom:20px">
+      <div class="card">
+        <div class="card-header"><span class="card-title">🏆 Best Selling Products</span></div>
+        <div class="card-body" style="padding:16px">
+          <canvas id="chart-top-products" height="220"></canvas>
+          <div id="chart-top-products-empty" style="display:none" class="empty-state"><div class="empty-state-icon">📦</div><div class="empty-state-text">No sales data yet</div></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">🗂 Category-wise Sales</span></div>
+        <div class="card-body" style="padding:16px">
+          <canvas id="chart-category" height="220"></canvas>
+          <div id="chart-category-empty" style="display:none" class="empty-state"><div class="empty-state-icon">🗂</div><div class="empty-state-text">No sales data yet</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-header"><span class="card-title">📅 Daily Sales Trend</span></div>
+      <div class="card-body" style="padding:16px"><canvas id="chart-daily" height="120"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="card-header"><span class="card-title">📋 Product-wise Breakdown</span></div>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th>Product</th><th>Qty Sold</th><th>Revenue</th><th>Profit</th></tr></thead>
+          <tbody id="rep-product-table"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- AI ASSISTANT -->
+  <div class="page-content" id="page-ai">
+    <!-- Mobile tab bar (hidden on desktop) -->
+    <div class="ai-tab-bar" id="ai-tab-bar">
+      <button class="ai-tab-btn active" id="ai-tab-chat" onclick="switchAITab('chat')">💬 Chat</button>
+      <button class="ai-tab-btn" id="ai-tab-quick" onclick="switchAITab('quick')">⚡ Quick Help</button>
+    </div>
+    <div class="ai-layout">
+      <div class="chat-window">
+        <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span id="ai-provider-icon" style="font-size:22px">🤖</span>
+            <div>
+              <div style="font-size:14px;font-weight:700" id="ai-provider-name">AI Krishi Assistant</div>
+              <div style="font-size:11px;color:var(--text2)">बीज, खाद, कीटनाशक की जानकारी पूछें</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <div class="ai-provider-toggle">
+              <button class="ai-prov-btn active" id="btn-gemini" onclick="setAIProvider('gemini')"><span>✨</span> Gemini</button>
+              <button class="ai-prov-btn" id="btn-groq" onclick="setAIProvider('groq')"><span>⚡</span> Groq</button>
+            </div>
+            <button class="btn btn-sm btn-ghost" onclick="clearChat()" title="Clear chat">🗑</button>
+          </div>
+        </div>
+        <div class="chat-messages" id="chat-messages">
+          <div class="chat-msg ai">नमस्ते! 🙏 मैं आपका AI Krishi सहायक हूँ।<br><br>मुझसे पूछें: बीज, खाद, कीटनाशक की जानकारी, प्रति एकड़ मात्रा, कब और कैसे उपयोग करें, फसल रोगों का इलाज।<br><br><em>Ask me anything about agricultural products!</em></div>
+        </div>
+        <div class="chat-input-row">
+          <button id="voice-btn" class="btn btn-ghost" style="padding:0 10px;font-size:20px;flex-shrink:0" onclick="toggleVoice()" title="Voice input">🎤</button>
+          <input class="chat-input" id="chat-input" placeholder="Type or speak... / बोलें या टाइप करें..." onkeydown="if(event.key==='Enter')sendChat()">
+          <button class="btn btn-primary" onclick="sendChat()" style="flex-shrink:0">➤</button>
+        </div>
+      </div>
+      <!-- Right panel: quick btns + chat history -->
+      <div style="display:flex;flex-direction:column;gap:16px;overflow-y:auto">
+        <div class="ai-quick-btns">
+          <div style="font-size:13px;font-weight:700;margin-bottom:12px;color:var(--text2)">Quick Questions</div>
+          <button class="ai-quick-btn" onclick="askQuick('🌱 Best seeds for rabi season in Madhya Pradesh?')">🌱 Rabi Seeds</button>
+          <button class="ai-quick-btn" onclick="askQuick('💊 DAP fertilizer dose per acre?')">💊 Fertilizer Dose</button>
+          <button class="ai-quick-btn" onclick="askQuick('🧪 Which pesticide for aphids on wheat?')">🧪 Aphid Control</button>
+          <button class="ai-quick-btn" onclick="askQuick('🌿 How to treat yellow rust in wheat?')">🌿 Crop Disease</button>
+          <button class="ai-quick-btn" onclick="askQuick('📐 How to calculate per acre dose?')">📐 Per Acre Dose</button>
+          <button class="ai-quick-btn" onclick="askQuick('💧 Water to fertilizer mixing ratio?')">💧 Water Ratio</button>
+          <div style="font-size:11px;color:var(--text3);margin-top:12px;padding:10px;background:var(--bg3);border-radius:8px;line-height:1.6">
+            💡 <strong>Active:</strong> <span id="ai-provider-note">Gemini (Free)</span><br>
+            Add keys in <a style="color:var(--primary);cursor:pointer" onclick="navTo('settings',null)">Settings →</a>
+          </div>
+        </div>
+        <!-- AI Reorder Suggestions -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">🔄 Reorder Suggestions</span><button class="btn btn-sm btn-ghost" onclick="getReorderSuggestions()">🤖 Ask AI</button></div>
+          <div id="reorder-suggestions" style="padding:12px;font-size:13px;color:var(--text2)">Click "Ask AI" to get smart reorder suggestions based on your low stock.</div>
+        </div>
+        <!-- Chat History -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">📜 Chat History</span><button class="btn btn-sm btn-ghost" onclick="clearChatHistory()">Clear</button></div>
+          <div id="chat-history-list" style="max-height:280px;overflow-y:auto">
+            <div style="padding:14px;font-size:13px;color:var(--text3);text-align:center">No saved conversations yet.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DISEASE SCANNER -->
+  <div class="page-content" id="page-disease">
+    <div class="grid-2">
+      <div class="card card-body">
+        <div style="font-size:22px;margin-bottom:8px">🔬</div>
+        <div style="font-size:16px;font-weight:700;margin-bottom:4px">Crop Disease Scanner</div>
+        <div style="font-size:13px;color:var(--text2);margin-bottom:20px">फसल की फोटो लें और तुरंत इलाज जानें</div>
+        <div id="disease-upload-area" style="border:2px dashed var(--border2);border-radius:12px;padding:40px;text-align:center;cursor:pointer;transition:border-color 0.2s" onclick="document.getElementById('disease-photo').click()" ondragover="event.preventDefault();this.style.borderColor='var(--primary)'" ondragleave="this.style.borderColor=''" ondrop="handleDiseaseFileDrop(event)">
+          <div id="disease-preview" style="display:none;margin-bottom:12px"><img id="disease-img" style="max-height:200px;border-radius:8px" alt="crop"></div>
+          <div id="disease-placeholder">
+            <div style="font-size:40px;margin-bottom:8px">📸</div>
+            <div style="font-size:14px;font-weight:600;color:var(--text2)">फोटो लें या अपलोड करें</div>
+            <div style="font-size:12px;color:var(--text3)">Take photo or upload image</div>
+          </div>
+        </div>
+        <input type="file" id="disease-photo" accept="image/*" style="display:none" onchange="handleDiseaseFile(this)">
+        <div style="display:flex;gap:8px;margin-top:12px">
+          <button class="btn btn-primary btn-block" onclick="scanDisease()">🤖 Analyze / विश्लेषण करें</button>
+          <button class="btn btn-ghost" onclick="clearDisease()">Clear</button>
+        </div>
+      </div>
+      <div class="card card-body" id="disease-result-card">
+        <div class="empty-state">
+          <div class="empty-state-icon">🌾</div>
+          <div class="empty-state-text">Upload a crop photo to diagnose</div>
+          <div class="empty-state-sub">AI will identify the disease and suggest treatment</div>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:20px">
+      <div class="card-header"><span class="card-title">Recent Scans</span></div>
+      <div id="disease-history"><div class="empty-state"><div class="empty-state-icon">📷</div><div class="empty-state-text">No recent scans</div></div></div>
+    </div>
+  </div>
+
+  <!-- DUAL CAMERA RECORDER -->
+  <div class="page-content" id="page-camera">
+    <div style="padding:4px 0 16px">
+
+      <!-- Mode selector -->
+      <div id="dc-mode-box">
+        <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:10px">Recording Mode</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px">
+          <div id="dc-mode-background" class="dc-mode-card dc-mode-active" onclick="DualCam.selectMode('background')">
+            <div style="font-size:26px;margin-bottom:6px">📱</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px">Background</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.4">Screen on — use phone freely while both cameras record silently</div>
+          </div>
+          <div id="dc-mode-screenoff" class="dc-mode-card" onclick="DualCam.selectMode('screenoff')">
+            <div style="font-size:26px;margin-bottom:6px">🌙</div>
+            <div style="font-weight:700;font-size:13px;margin-bottom:4px">Screen Off</div>
+            <div style="font-size:11px;color:var(--muted);line-height:1.4">Turn screen off after starting — CPU wake lock keeps cameras recording</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Pulse + Timer -->
+      <div style="text-align:center;margin-bottom:20px">
+        <div id="dc-pulse" style="display:none;position:relative;width:16px;height:16px;margin:0 auto 8px">
+          <span style="display:block;width:16px;height:16px;border-radius:50%;background:#ef4444;animation:dc-pulse-anim 1.2s ease-out infinite"></span>
+        </div>
+        <div id="dc-timer" style="font-size:48px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-1px;color:var(--text)">00:00</div>
+        <div id="dc-status" class="dc-status dc-status-idle">⬤ Ready</div>
+      </div>
+
+      <!-- Record button -->
+      <button id="dc-rec-btn" class="dc-btn dc-btn-start" onclick="DualCam.startRec()">⏺ Start Recording</button>
+
+      <!-- Info strip -->
+      <div style="background:var(--bg2);border-radius:12px;padding:12px 14px;margin-top:16px;font-size:12px;color:var(--muted);line-height:1.6">
+        📷 <strong>Back camera</strong> — 1280×720, video + audio (mic)<br>
+        🤳 <strong>Front camera</strong> — 640×480, video only<br>
+        💾 Saved to <strong>Downloads/DualCam</strong> + internal storage<br>
+        📌 Tap <strong>Stop</strong> in notification to stop from anywhere
+      </div>
+    </div>
+
+    <!-- Recordings list -->
+    <div style="margin-top:4px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-size:13px;font-weight:700;color:var(--text2)">SAVED RECORDINGS</div>
+        <button onclick="DualCam.loadRecordings()" style="background:none;border:none;color:var(--primary);font-size:12px;font-weight:600;cursor:pointer">↻ Refresh</button>
+      </div>
+      <div id="dc-recordings">
+        <div class="empty-state" style="padding:32px 0">
+          <div class="empty-state-icon">🎥</div>
+          <div class="empty-state-text">No recordings yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="page-content" id="page-settings">
+    <div class="settings-section">
+      <div class="settings-section-title">Shop Details / दुकान की जानकारी</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-row-label">Shop Name</div></div>
+          <input class="form-input" id="set-shop-name" placeholder="GKK" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Owner Name / मालिक का नाम</div></div>
+          <input class="form-input" id="set-owner" placeholder="Owner" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Phone / फोन</div></div>
+          <input class="form-input" id="set-phone" placeholder="+91" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Address / पता</div></div>
+          <input class="form-input" id="set-address" placeholder="Address" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Low Stock Alert Level</div><div class="settings-row-desc">Alert when stock below this number</div></div>
+          <input class="form-input" id="set-low-stock" type="number" value="5" style="max-width:100px">
+        </div>
+        <div class="settings-row" style="justify-content:flex-end">
+          <button class="btn btn-primary" onclick="saveSettings()">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">🤖 AI Configuration</div>
+      <div class="settings-card">
+
+        <!-- Gemini -->
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Google Gemini API Key <span class="badge badge-success" style="font-size:10px;margin-left:4px">Free</span></div>
+            <div class="settings-row-desc">For AI Chat & Disease Scanner. Get at <strong>aistudio.google.com</strong></div>
+          </div>
+          <div class="api-key-wrapper">
+            <input class="api-key-input" id="gemini-key-input" type="password" placeholder="AIza...">
+            <button class="api-key-toggle" onclick="toggleKeyVis('gemini-key-input',this)">👁</button>
+          </div>
+        </div>
+        <div class="settings-row" style="padding-top:0;border-top:none">
+          <div></div>
+          <button class="btn btn-sm btn-primary" onclick="saveApiKey('gemini')">Save</button>
+        </div>
+
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+
+        <!-- Groq -->
+        <div class="settings-row">
+          <div>
+            <div class="settings-row-label">Groq API Key <span class="badge badge-success" style="font-size:10px;margin-left:4px">Free</span></div>
+            <div class="settings-row-desc">For AI Chat (ultra fast). Get at <strong>console.groq.com</strong></div>
+          </div>
+          <div class="api-key-wrapper">
+            <input class="api-key-input" id="groq-key-input" type="password" placeholder="gsk_...">
+            <button class="api-key-toggle" onclick="toggleKeyVis('groq-key-input',this)">👁</button>
+          </div>
+        </div>
+        <div class="settings-row" style="padding-top:0;border-top:none">
+          <div></div>
+          <button class="btn btn-sm btn-primary" onclick="saveApiKey('groq')">Save</button>
+        </div>
+
+        <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:12px 14px;margin-top:4px;font-size:12px;color:var(--text2);line-height:1.7">
+          📌 <strong>How to get free keys:</strong><br>
+          • <strong>Gemini:</strong> aistudio.google.com → Get API Key (completely free, 1500 req/day)<br>
+          • <strong>Groq:</strong> console.groq.com → API Keys → Create (free tier available)<br>
+          • <strong>Disease Scanner</strong> always uses Gemini (supports images)
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Data Management</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-row-label">Export All Data</div></div>
+          <button class="btn btn-outline" onclick="exportData()">📥 Export JSON</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Import Data</div></div>
+          <button class="btn btn-outline" onclick="document.getElementById('import-file').click()">📤 Import JSON</button>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label" style="color:var(--danger)">Clear All Data</div><div class="settings-row-desc">This action cannot be undone</div></div>
+          <button class="btn btn-danger btn-sm" onclick="clearAllData()">🗑 Clear Data</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">Telegram Bot Sync</div>
+      <div class="settings-card">
+        <div class="settings-row">
+          <div><div class="settings-row-label">Status</div></div>
+          <div id="tg-status" style="font-size:13px;color:var(--text-secondary)">⚪ Not configured</div>
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Bot Token</div><div class="settings-row-desc">From @BotFather</div></div>
+          <input class="form-input" id="tg-token-input" type="password" placeholder="123456:ABC-DEF..." style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Channel / Chat ID</div><div class="settings-row-desc">Where data gets mirrored</div></div>
+          <input class="form-input" id="tg-chatid-input" placeholder="-1001234567890" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Admin ID</div><div class="settings-row-desc">Only this user can run /export /import</div></div>
+          <input class="form-input" id="tg-adminid-input" placeholder="5488677608" style="max-width:220px">
+        </div>
+        <div class="settings-row">
+          <div><div class="settings-row-label">Enable Telegram Sync</div><div class="settings-row-desc">Mirrors every table live to the channel</div></div>
+          <input type="checkbox" id="tg-enabled-toggle" style="width:20px;height:20px">
+        </div>
+        <div class="settings-row" style="justify-content:flex-end;gap:8px">
+          <button class="btn btn-outline btn-sm" onclick="testTelegramConnection()">🔌 Test</button>
+          <button class="btn btn-outline btn-sm" onclick="telegramBackupNow()">📦 Backup Now</button>
+          <button class="btn btn-primary" onclick="saveTelegramSettings()">Save</button>
+        </div>
+        <div class="settings-row">
+          <div class="settings-row-desc" style="font-size:12px;line-height:1.5">
+            In Telegram, message <b>/export</b> to get a full backup file, or <b>/import</b> then send a .json file to restore. Commands only work while the app is open in a tab (GKK has no background server). Every save is also mirrored live as an editable message per table — so the channel stays a working copy of your data even if Firestore is down.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-section-title">About</div>
+      <div class="settings-card">
+        <div class="settings-row"><div><div class="settings-row-label">🌿 GKK — Gumasta Krishi Kendra</div><div class="settings-row-desc">Version 3.0 | PWA App</div></div><span class="badge badge-success">Active</span></div>
+        <div class="settings-row"><div class="settings-row-desc">Powered by AI • Works Offline • No Database Needed</div></div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end main -->
+
+<!-- THEME PANEL -->
+<div class="theme-panel" id="theme-panel">
+  <div class="theme-panel-header">
+    <span class="theme-panel-title">🎨 Themes & Design</span>
+    <button class="modal-close" onclick="closeThemePanel()">✕</button>
+  </div>
+  <div class="theme-panel-body">
+    <div style="font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px">Preset Themes</div>
+
+    <div class="theme-option active" id="theme-opt-slate" onclick="applyTheme('slate', this)">
+      <div class="theme-preview">
+        <div class="theme-preview-sidebar" style="background:#1e2235"></div>
+        <div class="theme-preview-content" style="background:#f8f9fc"></div>
+      </div>
+      <div>
+        <div class="theme-name">Slate Pro</div>
+        <div class="theme-desc">Clean, modern, professional</div>
+      </div>
+    </div>
+
+    <div class="theme-option" id="theme-opt-midnight" onclick="applyTheme('midnight', this)">
+      <div class="theme-preview">
+        <div class="theme-preview-sidebar" style="background:#0a0c14"></div>
+        <div class="theme-preview-content" style="background:#0d0f18"></div>
+      </div>
+      <div>
+        <div class="theme-name">Midnight</div>
+        <div class="theme-desc">Dark, sleek, blue accents</div>
+      </div>
+    </div>
+
+    <div class="theme-option" id="theme-opt-forest" onclick="applyTheme('forest', this)">
+      <div class="theme-preview">
+        <div class="theme-preview-sidebar" style="background:#1b2b1c"></div>
+        <div class="theme-preview-content" style="background:#f5f7f2"></div>
+      </div>
+      <div>
+        <div class="theme-name">Forest</div>
+        <div class="theme-desc">Natural green, earthy tones</div>
+      </div>
+    </div>
+
+    <div class="theme-option" id="theme-opt-warm" onclick="applyTheme('warm', this)">
+      <div class="theme-preview">
+        <div class="theme-preview-sidebar" style="background:#2d1b0e"></div>
+        <div class="theme-preview-content" style="background:#fdf8f0"></div>
+      </div>
+      <div>
+        <div class="theme-name">Warm Amber</div>
+        <div class="theme-desc">Cozy orange, traditional feel</div>
+      </div>
+    </div>
+
+    <div class="theme-option" id="theme-opt-steel" onclick="applyTheme('steel', this)">
+      <div class="theme-preview">
+        <div class="theme-preview-sidebar" style="background:#1a2332"></div>
+        <div class="theme-preview-content" style="background:#f0f4f8"></div>
+      </div>
+      <div>
+        <div class="theme-name">Steel Blue</div>
+        <div class="theme-desc">Corporate, crisp blue tones</div>
+      </div>
+    </div>
+
+    <div class="custom-theme-section">
+      <div class="custom-theme-title">🖌 Build Your Own Theme</div>
+      <div class="color-row"><label>Background</label><input type="color" id="cc-bg" value="#f8f9fc" oninput="applyCustomTheme()"></div>
+      <div class="color-row"><label>Sidebar</label><input type="color" id="cc-sidebar" value="#1e2235" oninput="applyCustomTheme()"></div>
+      <div class="color-row"><label>Primary Color</label><input type="color" id="cc-primary" value="#6c63ff" oninput="applyCustomTheme()"></div>
+      <div class="color-row"><label>Accent Color</label><input type="color" id="cc-accent" value="#ff6584" oninput="applyCustomTheme()"></div>
+      <div class="color-row"><label>Text Color</label><input type="color" id="cc-text" value="#1a1d2e" oninput="applyCustomTheme()"></div>
+      <button class="btn btn-outline btn-block btn-sm" style="margin-top:8px" onclick="saveCustomTheme()">💾 Save Custom Theme</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+
+<!-- Add Product Modal -->
+<div class="modal-overlay" id="add-product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">➕ Add Product / उत्पाद जोड़ें</span>
+      <button class="modal-close" onclick="closeModal('add-product-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <!-- Barcode Scan Section -->
+      <div style="background:var(--primary-light);border-radius:var(--radius-sm);padding:12px 14px;margin-bottom:16px;border:1.5px dashed var(--primary)">
+        <div style="font-size:12px;font-weight:700;color:var(--primary);margin-bottom:8px">📷 Quick Add via Barcode / AI Lookup</div>
+        <div style="display:flex;gap:8px">
+          <input class="form-input" id="p-barcode" placeholder="Scan barcode or type product name..." style="flex:1;font-size:13px" onkeydown="if(event.key==='Enter')aiLookupProduct()">
+          <button class="btn btn-primary btn-sm" onclick="startBarcodeScanner()" title="Scan barcode">📷</button>
+          <button class="btn btn-sm" style="background:var(--primary);color:white" onclick="aiLookupProduct()" title="AI Lookup">🤖 AI</button>
+        </div>
+        <div id="barcode-scanner-wrap" style="display:none;margin-top:10px">
+          <video id="barcode-video" style="width:100%;border-radius:8px;max-height:180px;object-fit:cover" autoplay playsinline></video>
+          <button class="btn btn-ghost btn-sm btn-block" style="margin-top:6px" onclick="stopBarcodeScanner()">✕ Cancel Scan</button>
+        </div>
+        <div id="ai-lookup-result" style="display:none;margin-top:10px;padding:10px;background:var(--bg2);border-radius:8px;font-size:12px;color:var(--text2);line-height:1.6"></div>
+      </div>
+
+      <!-- Product Image (AI preview OR manual upload) -->
+      <div style="margin-bottom:14px">
+        <label class="form-label">📸 Product Image <span style="color:var(--text3);font-weight:400">(Optional)</span></label>
+        <div id="p-image-wrap" style="display:flex;flex-direction:column;align-items:center;gap:8px">
+          <!-- Preview box -->
+          <div id="p-img-preview-box" style="width:90px;height:90px;border-radius:12px;border:2px dashed var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;background:var(--bg2);overflow:hidden;position:relative" onclick="document.getElementById('p-img-upload').click()">
+            <img id="p-image-preview" style="width:100%;height:100%;object-fit:cover;display:none;border-radius:10px" alt="product">
+            <div id="p-img-placeholder" style="text-align:center;color:var(--text3)">
+              <div style="font-size:24px">📷</div>
+              <div style="font-size:10px;margin-top:2px">Tap to add</div>
+            </div>
+            <button id="p-img-remove-btn" onclick="removeProductImage(event)" style="display:none;position:absolute;top:4px;right:4px;background:rgba(0,0,0,0.6);color:#fff;border:none;border-radius:50%;width:20px;height:20px;font-size:11px;cursor:pointer;line-height:20px;text-align:center">✕</button>
+          </div>
+          <input type="file" id="p-img-upload" accept="image/*" style="display:none" onchange="handleProductImageUpload(event)">
+          <button class="btn btn-ghost btn-sm" onclick="document.getElementById('p-img-upload').click()" style="font-size:12px">📁 Choose Photo</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Product Name *</label>
+        <input class="form-input" id="p-name" placeholder="Product name / उत्पाद का नाम">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Item Code / Barcode</label>
+          <input class="form-input" id="p-itemcode" placeholder="e.g. 123456789">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Company</label>
+          <input class="form-input" id="p-company" placeholder="Company name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <select class="form-select" id="p-cat">
+            <option>Seeds / बीज</option>
+            <option>Fertilizer / खाद</option>
+            <option>Pesticide / कीटनाशक</option>
+            <option>Herbicide / खरपतवार</option>
+            <option>Tools / उपकरण</option>
+            <option>Irrigation / सिंचाई</option>
+            <option>Other / अन्य</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Unit</label>
+          <select class="form-select" id="p-unit">
+            <option>kg</option><option>g</option><option>L</option><option>ml</option>
+            <option>packet</option><option>bag</option><option>bottle</option><option>piece</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Buy Price (₹) *</label>
+          <input class="form-input" id="p-buy" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Sell Price (₹) *</label>
+          <input class="form-input" id="p-sell" type="number" placeholder="0" oninput="updateProductMargin()">
+        </div>
+      </div>
+      <div style="text-align:center;font-size:13px;color:var(--success);font-weight:600;margin:-8px 0 10px" id="p-margin-preview"></div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Stock Qty</label>
+          <input class="form-input" id="p-stock" type="number" placeholder="0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Notes / Formula</label>
+          <input class="form-input" id="p-notes" placeholder="Ingredients, formula...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-product-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveProduct()">Save Product</button>
+    </div>
+  </div>
+</div>
+
+<!-- Add Udhar Modal -->
+<div class="modal-overlay" id="add-udhar-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title">👥 Add Udhar / उधार जोड़ें</span>
+      <button class="modal-close" onclick="closeModal('add-udhar-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+        <div class="buyer-photo-circle" id="udhar-photo-circle" onclick="document.getElementById('udhar-photo-input').click()" style="width:60px;height:60px;font-size:24px">
+          <span id="udhar-photo-placeholder">👤</span>
+          <img id="udhar-photo-img" style="display:none" alt="customer">
+        </div>
+        <div>
+          <button class="btn btn-sm btn-ghost" onclick="document.getElementById('udhar-photo-input').click()">📷 Add Photo</button>
+          <input type="file" id="udhar-photo-input" accept="image/*" style="display:none" onchange="setUdharPhoto(this)">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Customer Name *</label>
+        <input class="form-input" id="u-name" placeholder="Customer name">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">Phone</label>
+          <input class="form-input" id="u-phone" placeholder="+91 XXXXX XXXXX" type="tel">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Amount (₹) *</label>
+          <input class="form-input" id="u-amount" type="number" placeholder="0">
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input class="form-input" id="u-notes" placeholder="What for?">
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('add-udhar-modal')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveUdhar()">Add Udhar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Bill Detail Modal -->
+<div class="modal-overlay" id="bill-detail-modal">
+  <div class="modal modal-wide">
+    <div class="modal-header">
+      <span class="modal-title">🧾 Bill Detail</span>
+      <button class="modal-close" onclick="closeModal('bill-detail-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="bill-detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('bill-detail-modal')">Close</button>
+      <button class="btn btn-primary" onclick="printBill()">🖨️ Print / Share</button>
+    </div>
+  </div>
+</div>
+
+<!-- Udhar Detail Modal -->
+<div class="modal-overlay" id="udhar-detail-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <span class="modal-title" id="udhar-detail-title">Udhar Detail</span>
+      <button class="modal-close" onclick="closeModal('udhar-detail-modal')">✕</button>
+    </div>
+    <div class="modal-body" id="udhar-detail-body"></div>
+    <div class="modal-footer">
+      <button class="btn btn-danger btn-sm" onclick="deleteUdharCurrent()">Delete</button>
+      <button class="btn btn-success" onclick="markUdharPaid()">✅ Mark as Paid</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ==================== DATA STORE ====================
+let db = {
+  products: [],
+  bills: [],
+  udhar: [],
+  returns: [],
+  diseaseHistory: [],
+  chatHistory: [],
+  settings: {
+    shopName: 'GKK', ownerName: '', phone: '', address: '',
+    lowStockLevel: 5, geminiKey: '', groqKey: '', theme: 'slate'
+  }
+};
+let cart = [];
+let discountType = 'pct';
+let paymentMethod = 'cash';
+let buyerPhoto = null;
+let udharPhoto = null;
+let currentUdharId = null;
+let currentBillId = null;
+let diseaseImageData = null;
+
+// ==================== INIT ====================
+function loadData() {
+  const saved = localStorage.getItem('gkk_db_v3');
+  if (saved) {
+    try { db = { ...db, ...JSON.parse(saved) }; } catch(e) {}
+  }
+  applyTheme(db.settings.theme || 'slate', null, true);
+  if (db.settings.geminiKey) document.getElementById('gemini-key-input').value = db.settings.geminiKey;
+  if (db.settings.groqKey) document.getElementById('groq-key-input').value = db.settings.groqKey;
+  if (db.settings.shopName) document.getElementById('set-shop-name').value = db.settings.shopName;
+  if (db.settings.ownerName) document.getElementById('set-owner').value = db.settings.ownerName;
+  if (db.settings.phone) document.getElementById('set-phone').value = db.settings.phone;
+  if (db.settings.address) document.getElementById('set-address').value = db.settings.address;
+  if (db.settings.lowStockLevel) document.getElementById('set-low-stock').value = db.settings.lowStockLevel;
+}
+
+function saveData() {
+  localStorage.setItem('gkk_db_v3', JSON.stringify(db));
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  loadData();
+  updateGreeting();
+  refreshDashboard();
+  renderBillProducts();
+  renderProducts();
+  renderStock();
+  renderUdhar();
+  renderOrders();
+  renderProfitLoss();
+  renderDiseaseHistory();
+  renderChatHistory();
+});
+
+// ==================== NAVIGATION ====================
+function navTo(page, el) {
+  document.querySelectorAll('.page-content').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  const pg = document.getElementById('page-' + page);
+  if (pg) pg.classList.add('active');
+  if (el) el.classList.add('active');
+  else {
+    const items = document.querySelectorAll('.nav-item');
+    items.forEach(i => { if (i.onclick && i.onclick.toString().includes("'" + page + "'")) i.classList.add('active'); });
+  }
+  const titles = {
+    dashboard: 'Dashboard', billing: 'New Bill / बिल', orders: 'Orders / ऑर्डर',
+    products: 'Products / उत्पाद', stock: 'Stock / स्टॉक', returns: 'Returns / वापसी',
+    udhar: 'Udhar / उधार', profit: 'Profit & Loss', reports: 'Reports',
+    ai: 'AI Assistant', disease: 'Disease Scanner', camera: '📹 Dual Camera', settings: 'Settings'
+  };
+  document.getElementById('page-title').textContent = titles[page] || page;
+  closeSidebar();
+  if (page === 'products') renderProducts();
+  if (page === 'stock') renderStock();
+  if (page === 'udhar') renderUdhar();
+  if (page === 'orders') renderOrders();
+  if (page === 'profit') renderProfitLoss();
+  if (page === 'reports') renderReports();
+  if (page === 'billing') renderBillProducts();
+  if (page === 'camera')  DualCam.init();
+}
+
+// ==================== SIDEBAR MOBILE ====================
+function switchAITab(tab) {
+  const chatPanel = document.querySelector('#page-ai .chat-window');
+  const rightPanel = document.querySelector('#page-ai .ai-layout > div:last-child');
+  document.getElementById('ai-tab-chat').classList.toggle('active', tab === 'chat');
+  document.getElementById('ai-tab-quick').classList.toggle('active', tab === 'quick');
+  if (tab === 'chat') {
+    chatPanel.style.display = 'flex';
+    rightPanel.classList.remove('ai-panel-visible');
+  } else {
+    chatPanel.style.display = 'none';
+    rightPanel.classList.add('ai-panel-visible');
+  }
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('sidebar-overlay').classList.toggle('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').classList.remove('open');
+}
+
+// ==================== GREETING ====================
+function updateGreeting() {
+  const h = new Date().getHours();
+  const greet = h < 12 ? 'सुप्रभात! 🌅 Good Morning' : h < 17 ? 'नमस्ते! 🙏 Good Afternoon' : 'शुभ संध्या! 🌆 Good Evening';
+  document.getElementById('greeting-text').textContent = greet;
+  const d = new Date();
+  document.getElementById('greeting-date').textContent = d.toLocaleDateString('hi-IN', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+}
+
+// ==================== THEME SYSTEM ====================
+function openThemePanel() { document.getElementById('theme-panel').classList.add('open'); }
+function closeThemePanel() { document.getElementById('theme-panel').classList.remove('open'); }
+
+function applyTheme(name, el, silent) {
+  document.body.removeAttribute('data-theme');
+  if (name !== 'slate') document.body.setAttribute('data-theme', name);
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+  const opt = document.getElementById('theme-opt-' + name);
+  if (opt) opt.classList.add('active');
+  if (el) el.classList.add('active');
+  db.settings.theme = name;
+  if (!silent) { saveData(); showToast('✨ Theme applied!'); }
+}
+
+function applyCustomTheme() {
+  const bg = document.getElementById('cc-bg').value;
+  const sidebar = document.getElementById('cc-sidebar').value;
+  const primary = document.getElementById('cc-primary').value;
+  const accent = document.getElementById('cc-accent').value;
+  const text = document.getElementById('cc-text').value;
+  document.body.removeAttribute('data-theme');
+  const root = document.documentElement;
+  root.style.setProperty('--bg', bg);
+  root.style.setProperty('--bg2', '#ffffff');
+  root.style.setProperty('--bg3', shadeColor(bg, -5));
+  root.style.setProperty('--sidebar', sidebar);
+  root.style.setProperty('--sidebar-accent', primary);
+  root.style.setProperty('--primary', primary);
+  root.style.setProperty('--primary-light', hexToRgba(primary, 0.1));
+  root.style.setProperty('--primary-dark', shadeColor(primary, -20));
+  root.style.setProperty('--accent', accent);
+  root.style.setProperty('--text', text);
+  document.querySelectorAll('.theme-option').forEach(o => o.classList.remove('active'));
+}
+
+function saveCustomTheme() {
+  db.settings.customTheme = {
+    bg: document.getElementById('cc-bg').value,
+    sidebar: document.getElementById('cc-sidebar').value,
+    primary: document.getElementById('cc-primary').value,
+    accent: document.getElementById('cc-accent').value,
+    text: document.getElementById('cc-text').value
+  };
+  db.settings.theme = 'custom';
+  saveData();
+  showToast('💾 Custom theme saved!');
+}
+
+function hexToRgba(hex, alpha) {
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+function shadeColor(hex, pct) {
+  const num = parseInt(hex.replace('#',''),16);
+  const amt = Math.round(2.55 * pct);
+  const R = Math.min(255, Math.max(0, (num>>16) + amt));
+  const G = Math.min(255, Math.max(0, (num>>8&0x00FF) + amt));
+  const B = Math.min(255, Math.max(0, (num&0x0000FF) + amt));
+  return '#' + (0x1000000 + R*0x10000 + G*0x100 + B).toString(16).slice(1);
+}
+
+// ==================== MODALS ====================
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+// ==================== TOAST ====================
+function showToast(msg, icon) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.innerHTML = (icon || '✅') + ' ' + msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 3000);
+}
+
+// ==================== PRODUCTS ====================
+function updateProductMargin() {
+  const buy = parseFloat(document.getElementById('p-buy').value) || 0;
+  const sell = parseFloat(document.getElementById('p-sell').value) || 0;
+  const m = document.getElementById('p-margin-preview');
+  if (buy && sell) {
+    const margin = ((sell - buy) / buy * 100).toFixed(1);
+    m.textContent = `Margin: ${margin}% (Profit: ₹${(sell-buy).toFixed(2)})`;
+    m.style.color = sell >= buy ? 'var(--success)' : 'var(--danger)';
+  } else m.textContent = '';
+}
+
+// ── PRODUCT IMAGE HANDLERS ──────────────────────────────────────────
+function handleProductImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  // Compress image to keep localStorage size manageable
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      // Max 300px wide — enough for display, small for storage
+      const maxW = 300;
+      const scale = Math.min(1, maxW / img.width);
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      const compressed = canvas.toDataURL('image/jpeg', 0.7);
+      // Show preview
+      const prevImg = document.getElementById('p-image-preview');
+      prevImg.src = compressed;
+      prevImg.style.display = 'block';
+      document.getElementById('p-img-placeholder').style.display = 'none';
+      document.getElementById('p-img-remove-btn').style.display = 'flex';
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function removeProductImage(event) {
+  event.stopPropagation();
+  const prevImg = document.getElementById('p-image-preview');
+  prevImg.src = '';
+  prevImg.style.display = 'none';
+  document.getElementById('p-img-placeholder').style.display = 'flex';
+  document.getElementById('p-img-remove-btn').style.display = 'none';
+  document.getElementById('p-img-upload').value = '';
+}
+
+function saveProduct() {
+  const name = document.getElementById('p-name').value.trim();
+  const buy = parseFloat(document.getElementById('p-buy').value);
+  const sell = parseFloat(document.getElementById('p-sell').value);
+  if (!name || !buy || !sell) { showToast('Please fill required fields', '⚠️'); return; }
+  // Get image if uploaded
+  const imgEl = document.getElementById('p-image-preview');
+  const imageData = (imgEl && imgEl.src && imgEl.style.display !== 'none' && imgEl.src.startsWith('data:')) ? imgEl.src : '';
+
+  const product = {
+    id: Date.now().toString(),
+    name, category: document.getElementById('p-cat').value,
+    unit: document.getElementById('p-unit').value,
+    buyPrice: buy, sellPrice: sell,
+    stock: parseInt(document.getElementById('p-stock').value) || 0,
+    company: document.getElementById('p-company').value.trim(),
+    notes: document.getElementById('p-notes').value.trim(),
+    itemCode: document.getElementById('p-itemcode').value.trim(),
+    image: imageData,
+    createdAt: new Date().toISOString()
+  };
+  db.products.push(product);
+  saveData();
+  closeModal('add-product-modal');
+  ['p-name','p-buy','p-sell','p-stock','p-company','p-notes','p-itemcode','p-barcode'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  document.getElementById('ai-lookup-result').style.display = 'none';
+  // Reset image preview
+  const prevImg = document.getElementById('p-image-preview');
+  if (prevImg) { prevImg.src = ''; prevImg.style.display = 'none'; }
+  const placeholder = document.getElementById('p-img-placeholder');
+  if (placeholder) placeholder.style.display = 'flex';
+  const removeBtn = document.getElementById('p-img-remove-btn');
+  if (removeBtn) removeBtn.style.display = 'none';
+  renderProducts(); renderStock(); renderBillProducts(); refreshDashboard();
+  showToast('Product added! 📦');
+}
+
+// ==================== BARCODE + AI PRODUCT LOOKUP ====================
+let barcodeStream = null;
+
+async function startBarcodeScanner() {
+  const wrap = document.getElementById('barcode-scanner-wrap');
+  wrap.style.display = 'block';
+  try {
+    barcodeStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+    document.getElementById('barcode-video').srcObject = barcodeStream;
+    showToast('📷 Camera started — point at barcode', 'ℹ️');
+    if ('BarcodeDetector' in window) {
+      const detector = new BarcodeDetector({ formats: ['ean_13','ean_8','code_128','qr_code','upc_a','upc_e'] });
+      const video = document.getElementById('barcode-video');
+      const scanLoop = setInterval(async () => {
+        if (!barcodeStream) { clearInterval(scanLoop); return; }
+        try {
+          const barcodes = await detector.detect(video);
+          if (barcodes.length > 0) {
+            clearInterval(scanLoop);
+            stopBarcodeScanner();
+            const code = barcodes[0].rawValue;
+            document.getElementById('p-barcode').value = code;
+            document.getElementById('p-itemcode').value = code;
+            showToast('✅ Barcode scanned! Fetching product info...', 'ℹ️');
+            gtinLookup(code);
+          }
+        } catch(e) {}
+      }, 500);
+    } else {
+      showToast('Manual entry: type barcode below ↓', 'ℹ️');
+    }
+  } catch(e) {
+    wrap.style.display = 'none';
+    showToast('Camera access denied. Type barcode manually.', '⚠️');
+  }
+}
+
+// ==================== FREE GTIN/UPC/EAN DATABASE LOOKUP ====================
+async function gtinLookup(barcode) {
+  const resultDiv = document.getElementById('ai-lookup-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '🔍 Fetching product from global database...';
+
+  try {
+    // Try Open Food Facts (free, no key needed, works for EAN/UPC)
+    const resp = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`);
+    const data = await resp.json();
+
+    if (data.status === 1 && data.product) {
+      const p = data.product;
+      const name = p.product_name || p.product_name_en || '';
+      const brand = p.brands || '';
+      const imgUrl = p.image_front_url || p.image_url || '';
+
+      if (name) {
+        document.getElementById('p-name').value = name;
+        if (brand) document.getElementById('p-company').value = brand;
+
+        // Show product image
+        if (imgUrl) {
+          const imgWrap = document.getElementById('p-image-wrap');
+          const imgEl = document.getElementById('p-image-preview');
+          imgWrap.style.display = 'block';
+          imgEl.src = imgUrl;
+          imgEl.onerror = () => { imgWrap.style.display = 'none'; };
+        }
+
+        resultDiv.innerHTML = `
+          <strong style="color:var(--success)">✅ Found: ${name}</strong><br>
+          <span style="color:var(--text2)">${brand ? brand + ' •' : ''} Barcode: ${barcode}</span><br>
+          <span style="font-size:11px;color:var(--primary)">✏️ Fill Category, Buy/Sell price & Stock to save</span>`;
+        document.getElementById('p-buy').focus();
+        return;
+      }
+    }
+
+    // If not found in Open Food Facts, try UPC Item DB (for agricultural/non-food products)
+    const resp2 = await fetch(`https://api.upcitemdb.com/prod/trial/lookup?upc=${barcode}`);
+    const data2 = await resp2.json();
+
+    if (data2.code === 'OK' && data2.items && data2.items.length > 0) {
+      const item = data2.items[0];
+      const name = item.title || '';
+      const brand = item.brand || '';
+      const imgUrl = (item.images && item.images[0]) ? item.images[0] : '';
+
+      document.getElementById('p-name').value = name;
+      if (brand) document.getElementById('p-company').value = brand;
+
+      if (imgUrl) {
+        const imgWrap = document.getElementById('p-image-wrap');
+        const imgEl = document.getElementById('p-image-preview');
+        imgWrap.style.display = 'block';
+        imgEl.src = imgUrl;
+        imgEl.onerror = () => { imgWrap.style.display = 'none'; };
+      }
+
+      resultDiv.innerHTML = `
+        <strong style="color:var(--success)">✅ Found: ${name}</strong><br>
+        <span style="color:var(--text2)">${brand ? brand + ' •' : ''} Barcode: ${barcode}</span><br>
+        <span style="font-size:11px;color:var(--primary)">✏️ Fill Category, Buy/Sell price & Stock to save</span>`;
+      document.getElementById('p-buy').focus();
+      return;
+    }
+
+    // Nothing found in free databases — barcode filled, let user type name
+    resultDiv.innerHTML = `
+      <span style="color:var(--warning)">⚠️ Barcode ${barcode} not found in global database.</span><br>
+      <span style="font-size:11px;color:var(--text2)">This may be a local/regional product. Type name below & press 🤖 AI to auto-fill details, or fill manually.</span>`;
+
+  } catch(e) {
+    resultDiv.innerHTML = `<span style="color:var(--text2)">⚠️ Could not connect to product database. Type name & use 🤖 AI Lookup, or fill manually.</span>`;
+  }
+}
+
+function stopBarcodeScanner() {
+  if (barcodeStream) { barcodeStream.getTracks().forEach(t => t.stop()); barcodeStream = null; }
+  const wrap = document.getElementById('barcode-scanner-wrap');
+  if (wrap) wrap.style.display = 'none';
+}
+
+async function aiLookupProduct() {
+  const query = document.getElementById('p-barcode').value.trim() || document.getElementById('p-name').value.trim();
+  if (!query) { showToast('Enter product name or barcode first', '⚠️'); return; }
+
+  const groqKey = db.settings.groqKey;
+  const geminiKey = db.settings.geminiKey;
+  if (!groqKey && !geminiKey) {
+    showToast('Add Groq or Gemini API key in Settings first', '⚠️');
+    return;
+  }
+
+  const resultDiv = document.getElementById('ai-lookup-result');
+  resultDiv.style.display = 'block';
+  resultDiv.innerHTML = '🤖 Looking up product info...';
+
+  const prompt = `You are an agricultural product database for India. For the product: "${query}"
+Respond ONLY in this exact JSON format (no markdown, no extra text):
+{
+  "name": "exact product name",
+  "company": "manufacturer company name",
+  "category": "one of: Seeds / बीज, Fertilizer / खाद, Pesticide / कीटनाशक, Herbicide / खरपतवार, Tools / उपकरण, Irrigation / सिंचाई, Other / अन्य",
+  "unit": "one of: kg, g, L, ml, packet, bag, bottle, piece",
+  "formula": "active ingredients or chemical formula if applicable",
+  "description": "brief description in 1-2 lines",
+  "use": "main crops and pests it targets"
+}
+If unknown, use best guesses based on the name. Always fill all fields.`;
+
+  try {
+    let text = '';
+
+    if (groqKey) {
+      const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + groqKey },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 400,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      text = data.choices?.[0]?.message?.content || '';
+    } else if (geminiKey) {
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${geminiKey}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          generationConfig: { maxOutputTokens: 400 }
+        })
+      });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    }
+
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Could not parse AI response');
+    const info = JSON.parse(jsonMatch[0]);
+
+    // Auto-fill all form fields
+    if (info.name) document.getElementById('p-name').value = info.name;
+    if (info.company) document.getElementById('p-company').value = info.company;
+    if (info.category) {
+      const sel = document.getElementById('p-cat');
+      for (let o of sel.options) { if (o.value.includes(info.category.split('/')[0].trim()) || info.category.includes(o.value.split('/')[0].trim())) { sel.value = o.value; break; } }
+    }
+    if (info.unit) {
+      const sel = document.getElementById('p-unit');
+      for (let o of sel.options) { if (o.value === info.unit) { sel.value = o.value; break; } }
+    }
+    if (info.formula || info.description) {
+      document.getElementById('p-notes').value = (info.formula ? info.formula + ' | ' : '') + (info.description || '');
+    }
+
+    // Show product image from Google Images
+    const productName = info.name || query;
+    const imgWrap = document.getElementById('p-image-wrap');
+    const imgEl = document.getElementById('p-image-preview');
+    const imgUrl = `https://www.google.com/search?tbm=isch&q=${encodeURIComponent(productName + ' agricultural product India')}&tbs=itp:photo`;
+    imgWrap.style.display = 'block';
+    imgEl.src = `https://via.placeholder.com/80x80/6c63ff/ffffff?text=${encodeURIComponent(productName.slice(0,4))}`;
+    imgEl.alt = productName;
+
+    resultDiv.innerHTML = `
+      <strong style="color:var(--success)">✅ Found: ${info.name}</strong><br>
+      <span style="color:var(--text2)">${info.company || ''} ${info.category ? '• ' + info.category : ''}</span><br>
+      ${info.formula ? '<span style="font-size:11px">🧪 ' + info.formula + '</span><br>' : ''}
+      ${info.use ? '<span style="font-size:11px">🌾 ' + info.use + '</span><br>' : ''}
+      <span style="font-size:11px;color:var(--primary)">✏️ Fill Buy/Sell price & Stock to save</span>`;
+    document.getElementById('p-buy').focus();
+
+  } catch(e) {
+    resultDiv.innerHTML = `<span style="color:var(--danger)">❌ Lookup failed: ${e.message}</span><br><span style="font-size:11px;color:var(--text2)">Fill manually ↓</span>`;
+  }
+}
+
+// ==================== REPORTS & CHARTS ====================
+let reportPeriod = 'week';
+let chartTopProducts, chartCategory, chartDaily;
+
+function setReportPeriod(p, el) {
+  reportPeriod = p;
+  document.querySelectorAll('#page-reports .pill-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderReports();
+}
+
+function getFilteredBills() {
+  const now = new Date();
+  return db.bills.filter(b => {
+    const d = new Date(b.createdAt);
+    if (reportPeriod === 'week') { const w = new Date(now); w.setDate(w.getDate()-7); return d >= w; }
+    if (reportPeriod === 'month') { const m = new Date(now); m.setDate(m.getDate()-30); return d >= m; }
+    return true;
+  });
+}
+
+function renderReports() {
+  const bills = getFilteredBills();
+  const revenue = bills.reduce((s,b) => s + b.total, 0);
+  const profit = bills.reduce((s,b) => s + b.profit, 0);
+  const margin = revenue ? (profit/revenue*100).toFixed(1) : 0;
+
+  document.getElementById('rep-revenue').textContent = '₹' + revenue.toFixed(0);
+  document.getElementById('rep-profit').textContent = '₹' + profit.toFixed(0);
+  document.getElementById('rep-bills').textContent = bills.length;
+  document.getElementById('rep-margin').textContent = margin + '%';
+
+  // Build product sales map
+  const prodMap = {};
+  bills.forEach(b => b.items.forEach(i => {
+    if (!prodMap[i.name]) prodMap[i.name] = { qty:0, revenue:0, profit:0, category: i.category||'Other' };
+    prodMap[i.name].qty += i.qty;
+    prodMap[i.name].revenue += i.sellPrice * i.qty;
+    prodMap[i.name].profit += (i.sellPrice - i.buyPrice) * i.qty;
+  }));
+
+  const sorted = Object.entries(prodMap).sort((a,b) => b[1].revenue - a[1].revenue);
+
+  // Product table
+  const tbody = document.getElementById('rep-product-table');
+  if (tbody) {
+    tbody.innerHTML = sorted.length ? sorted.map(([name, d]) =>
+      `<tr><td><strong>${name}</strong></td><td>${d.qty}</td><td style="font-family:var(--font-mono)">₹${d.revenue.toFixed(0)}</td><td style="font-family:var(--font-mono);color:var(--success)">₹${d.profit.toFixed(0)}</td></tr>`
+    ).join('') : '<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--text3)">No sales data</td></tr>';
+  }
+
+  // Category map
+  const catMap = {};
+  bills.forEach(b => b.items.forEach(i => {
+    const cat = i.category || 'Other';
+    catMap[cat] = (catMap[cat] || 0) + i.sellPrice * i.qty;
+  }));
+
+  // Daily map (last 7 or 30 days)
+  const days = reportPeriod === 'week' ? 7 : 30;
+  const dailyMap = {};
+  const labels = [];
+  for (let i = days-1; i >= 0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const key = d.toISOString().split('T')[0];
+    dailyMap[key] = 0;
+    labels.push(d.toLocaleDateString('en-IN', { day:'numeric', month:'short' }));
+  }
+  bills.forEach(b => {
+    const key = new Date(b.createdAt).toISOString().split('T')[0];
+    if (dailyMap[key] !== undefined) dailyMap[key] += b.total;
+  });
+
+  const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim() || '#6c63ff';
+
+  // Top Products Bar Chart
+  const topN = sorted.slice(0,6);
+  const canvasTP = document.getElementById('chart-top-products');
+  const emptyTP = document.getElementById('chart-top-products-empty');
+  if (topN.length === 0) { canvasTP.style.display='none'; emptyTP.style.display=''; } 
+  else {
+    canvasTP.style.display=''; emptyTP.style.display='none';
+    if (chartTopProducts) chartTopProducts.destroy();
+    chartTopProducts = new Chart(canvasTP, {
+      type: 'bar',
+      data: {
+        labels: topN.map(([n]) => n.length > 14 ? n.slice(0,14)+'…' : n),
+        datasets: [{ label:'Revenue (₹)', data: topN.map(([,d]) => d.revenue), backgroundColor: primaryColor + 'cc', borderRadius: 6, borderSkipped: false }]
+      },
+      options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{ callback: v => '₹'+v } }, x:{ ticks:{ font:{size:10} } } } }
+    });
+  }
+
+  // Category Doughnut Chart
+  const catKeys = Object.keys(catMap);
+  const canvasCat = document.getElementById('chart-category');
+  const emptyCat = document.getElementById('chart-category-empty');
+  if (catKeys.length === 0) { canvasCat.style.display='none'; emptyCat.style.display=''; }
+  else {
+    canvasCat.style.display=''; emptyCat.style.display='none';
+    const palette = ['#6c63ff','#43b89c','#f6c90e','#ff6584','#63b3ed','#f687b3','#68d391','#fc8181'];
+    if (chartCategory) chartCategory.destroy();
+    chartCategory = new Chart(canvasCat, {
+      type: 'doughnut',
+      data: {
+        labels: catKeys,
+        datasets: [{ data: catKeys.map(k => catMap[k]), backgroundColor: catKeys.map((_,i) => palette[i%palette.length]), borderWidth: 2 }]
+      },
+      options: { responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{size:11}, padding:10 } } }, cutout:'60%' }
+    });
+  }
+
+  // Daily Sales Line Chart
+  if (chartDaily) chartDaily.destroy();
+  chartDaily = new Chart(document.getElementById('chart-daily'), {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{ label:'Sales (₹)', data: Object.values(dailyMap), borderColor: primaryColor, backgroundColor: primaryColor+'22', tension:0.4, fill:true, pointRadius:3 }]
+    },
+    options: { responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{ callback: v => '₹'+v } }, x:{ ticks:{ maxTicksLimit:7, font:{size:10} } } } }
+  });
+}
+
+// ==================== PDF EXPORT ====================
+function exportPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+  const shop = db.settings.shopName || 'GKK';
+  const now = new Date().toLocaleDateString('en-IN');
+  const bills = getFilteredBills();
+  const revenue = bills.reduce((s,b) => s+b.total, 0);
+  const profit = bills.reduce((s,b) => s+b.profit, 0);
+
+  // Header
+  doc.setFontSize(20); doc.setFont('helvetica','bold');
+  doc.text(shop, 105, 20, { align:'center' });
+  doc.setFontSize(11); doc.setFont('helvetica','normal');
+  doc.text('Sales Report — ' + now, 105, 28, { align:'center' });
+  doc.line(15, 32, 195, 32);
+
+  // Summary
+  doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('Summary', 15, 42);
+  doc.setFontSize(11); doc.setFont('helvetica','normal');
+  doc.text(`Period: ${reportPeriod === 'week' ? 'Last 7 days' : reportPeriod === 'month' ? 'Last 30 days' : 'All Time'}`, 15, 50);
+  doc.text(`Total Revenue: Rs. ${revenue.toFixed(0)}`, 15, 58);
+  doc.text(`Total Profit: Rs. ${profit.toFixed(0)}`, 15, 66);
+  doc.text(`Total Bills: ${bills.length}`, 15, 74);
+  doc.text(`Profit Margin: ${revenue ? (profit/revenue*100).toFixed(1) : 0}%`, 15, 82);
+  doc.line(15, 87, 195, 87);
+
+  // Product breakdown
+  doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('Product-wise Sales', 15, 97);
+  doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Product', 15, 106); doc.text('Qty', 110, 106); doc.text('Revenue', 135, 106); doc.text('Profit', 170, 106);
+  doc.line(15, 109, 195, 109);
+
+  const prodMap = {};
+  bills.forEach(b => b.items.forEach(i => {
+    if (!prodMap[i.name]) prodMap[i.name] = { qty:0, revenue:0, profit:0 };
+    prodMap[i.name].qty += i.qty;
+    prodMap[i.name].revenue += i.sellPrice * i.qty;
+    prodMap[i.name].profit += (i.sellPrice - i.buyPrice) * i.qty;
+  }));
+  const sorted = Object.entries(prodMap).sort((a,b) => b[1].revenue - a[1].revenue);
+
+  doc.setFont('helvetica','normal');
+  let y = 117;
+  sorted.slice(0, 25).forEach(([name, d]) => {
+    if (y > 270) { doc.addPage(); y = 20; }
+    doc.text(name.slice(0,28), 15, y);
+    doc.text(String(d.qty), 110, y);
+    doc.text('Rs.' + d.revenue.toFixed(0), 135, y);
+    doc.text('Rs.' + d.profit.toFixed(0), 170, y);
+    y += 8;
+  });
+
+  // Footer
+  doc.setFontSize(9); doc.setFont('helvetica','italic');
+  doc.text('Generated by GKK App — ' + now, 105, 290, { align:'center' });
+
+  doc.save(`GKK_Report_${now.replace(/\//g,'-')}.pdf`);
+  showToast('📄 PDF exported!');
+}
+
+// ==================== VOICE INPUT ====================
+let recognition = null;
+let isListening = false;
+
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+    showToast('Voice not supported in this browser. Try Chrome.', '⚠️'); return;
+  }
+  if (isListening) {
+    recognition.stop(); return;
+  }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  recognition = new SR();
+  recognition.lang = 'hi-IN';
+  recognition.interimResults = true;
+  recognition.continuous = false;
+
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('voice-btn').textContent = '🔴';
+    document.getElementById('voice-btn').style.color = 'var(--danger)';
+    document.getElementById('chat-input').placeholder = 'Listening... / सुन रहा हूँ...';
+  };
+  recognition.onresult = e => {
+    const transcript = Array.from(e.results).map(r => r[0].transcript).join('');
+    document.getElementById('chat-input').value = transcript;
+  };
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById('voice-btn').textContent = '🎤';
+    document.getElementById('voice-btn').style.color = '';
+    document.getElementById('chat-input').placeholder = 'Type or speak... / बोलें या टाइप करें...';
+    const val = document.getElementById('chat-input').value.trim();
+    if (val) sendChat();
+  };
+  recognition.onerror = e => {
+    isListening = false;
+    document.getElementById('voice-btn').textContent = '🎤';
+    showToast('Voice error: ' + e.error, '⚠️');
+  };
+  recognition.start();
+}
+
+// ==================== CHAT HISTORY ====================
+function saveChatToHistory(userMsg, aiReply) {
+  if (!db.chatHistory) db.chatHistory = [];
+  db.chatHistory.unshift({
+    id: Date.now(),
+    provider: aiProvider,
+    userMsg: userMsg.slice(0, 100),
+    aiReply: aiReply.slice(0, 200),
+    date: new Date().toLocaleDateString('hi-IN')
+  });
+  db.chatHistory = db.chatHistory.slice(0, 30);
+  saveData();
+  renderChatHistory();
+}
+
+function renderChatHistory() {
+  const el = document.getElementById('chat-history-list');
+  if (!el) return;
+  if (!db.chatHistory || !db.chatHistory.length) {
+    el.innerHTML = '<div style="padding:14px;font-size:13px;color:var(--text3);text-align:center">No saved conversations yet.</div>';
+    return;
+  }
+  el.innerHTML = db.chatHistory.map(h => `
+    <div style="padding:10px 14px;border-bottom:1px solid var(--border);cursor:pointer" onclick="replayChatItem('${h.id}')">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:3px">${h.date} · ${h.provider||'AI'}</div>
+      <div style="font-size:12.5px;font-weight:600;color:var(--text)">${h.userMsg}${h.userMsg.length>=100?'…':''}</div>
+      <div style="font-size:11.5px;color:var(--text2);margin-top:2px">${h.aiReply}${h.aiReply.length>=200?'…':''}</div>
+    </div>`).join('');
+}
+
+function replayChatItem(id) {
+  const h = db.chatHistory?.find(x => x.id == id);
+  if (!h) return;
+  document.getElementById('chat-input').value = h.userMsg;
+  showToast('Question loaded — press Send');
+}
+
+function clearChat() {
+  document.getElementById('chat-messages').innerHTML = '<div class="chat-msg ai">नमस्ते! 🙏 Chat cleared. Ask me anything!</div>';
+}
+
+function clearChatHistory() {
+  db.chatHistory = [];
+  saveData();
+  renderChatHistory();
+  showToast('Chat history cleared');
+}
+
+// ==================== AI REORDER SUGGESTIONS ====================
+async function getReorderSuggestions() {
+  const key = db.settings.groqKey;
+  if (!key) { showToast('Add Groq API key in Settings first ⚙️', '⚠️'); return; }
+  const lowStock = db.products.filter(p => p.stock <= (db.settings.lowStockLevel || 5));
+  if (!lowStock.length) {
+    document.getElementById('reorder-suggestions').innerHTML = '✅ All products are well stocked! No reorder needed.';
+    return;
+  }
+  const el = document.getElementById('reorder-suggestions');
+  el.innerHTML = '<div style="display:flex;align-items:center;gap:8px;color:var(--text2);font-size:13px"><div class="spinner" style="width:16px;height:16px;border:2px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite"></div> ⚡ Groq AI analyzing stock...</div>';
+
+  const month = new Date().toLocaleString('en', {month: 'long'});
+  const productList = lowStock.map(p =>
+    `• ${p.name} | Stock: ${p.stock} ${p.unit} | Category: ${p.category} | Sell Price: ₹${p.sellPrice}`
+  ).join('\n');
+
+  try {
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${key}`
+      },
+      body: JSON.stringify({
+        model: 'llama-3.3-70b-versatile',
+        max_tokens: 500,
+        messages: [{
+          role: 'system',
+          content: 'You are an expert agricultural shop advisor for a shop in Madhya Pradesh, India. Give reorder suggestions in Hinglish (Hindi+English mix). Be practical and specific. Use bullet points with emojis.'
+        }, {
+          role: 'user',
+          content: `Current month: ${month}
+
+Low stock products:
+${productList}
+
+For each product give:
+🔴/🟡/🟢 Urgency | Suggested reorder qty | Reason (seasonal demand, usage rate)
+
+Also add 1 seasonal tip for this month for MP farmers.`
+        }]
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const text = data.choices?.[0]?.message?.content || 'No suggestions.';
+    // Format nicely
+    const formatted = text
+      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\n/g, '<br>');
+    el.innerHTML = `
+      <div style="font-size:12.5px;line-height:1.9">${formatted}</div>
+      <div style="font-size:10px;color:var(--text3);margin-top:8px;text-align:right">⚡ Powered by Groq AI (llama-3.3-70b)</div>
+    `;
+  } catch(e) {
+    el.innerHTML = `<span style="color:var(--danger)">❌ Error: ${e.message}</span>`;
+  }
+}
+
+function renderProducts() {
+  const search = (document.getElementById('prod-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('prod-cat')?.value || '';
+  let prods = db.products.filter(p =>
+    (!search || p.name.toLowerCase().includes(search) || (p.company||'').toLowerCase().includes(search)) &&
+    (!cat || p.category === cat)
+  );
+  const grid = document.getElementById('products-grid');
+  if (!grid) return;
+  if (!prods.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📦</div><div class="empty-state-text">No products found</div><div class="empty-state-sub">Add your first product!</div></div>'; return; }
+  grid.innerHTML = prods.map(p => {
+    const low = p.stock <= db.settings.lowStockLevel && p.stock > 0;
+    const out = p.stock === 0;
+    const imgHtml = p.image
+      ? `<div style="width:100%;height:80px;border-radius:8px;overflow:hidden;margin-bottom:8px;background:var(--bg2)">
+           <img src="${p.image}" style="width:100%;height:100%;object-fit:cover" alt="${p.name}" onerror="this.parentElement.style.display='none'">
+         </div>`
+      : `<div style="width:100%;height:56px;border-radius:8px;background:var(--bg2);display:flex;align-items:center;justify-content:center;margin-bottom:8px;font-size:26px">
+           ${ p.category.includes('Seed') ? '🌾' : p.category.includes('Fertil') ? '🧪' : p.category.includes('Pestic') ? '🐛' : p.category.includes('Herb') ? '🌿' : p.category.includes('Tool') ? '🔧' : p.category.includes('Irrig') ? '💧' : '📦' }
+         </div>`;
+    return `<div class="product-card${out?' out-of-stock':''}">
+      ${imgHtml}
+      <div class="product-cat">${p.category}</div>
+      <div class="product-name">${p.name}</div>
+      ${p.company ? `<div style="font-size:11px;color:var(--text3);margin-bottom:4px">${p.company}</div>` : ''}
+      <div class="product-price">₹${p.sellPrice}</div>
+      <div class="product-buy-price">Buy: ₹${p.buyPrice} | ${p.unit}</div>
+      <div class="product-stock${low?' low':out?' out':''}">
+        Stock: ${p.stock} ${p.unit} ${low?'⚠️ Low':out?'❌ Out':''}
+      </div>
+      <button class="product-add-btn" onclick="addToCart('${p.id}')">+</button>
+    </div>`;
+  }).join('');
+}
+
+function renderBillProducts() {
+  const search = (document.getElementById('bill-search')?.value || '').toLowerCase();
+  const cat = document.getElementById('bill-cat-filter')?.value || '';
+  let prods = db.products.filter(p =>
+    p.stock > 0 &&
+    (!search || p.name.toLowerCase().includes(search)) &&
+    (!cat || p.category === cat)
+  );
+  const grid = document.getElementById('bill-products-grid');
+  if (!grid) return;
+  if (!prods.length) { grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="empty-state-icon">📦</div><div class="empty-state-text">No products in stock</div><div class="empty-state-sub">Add products first!</div></div>'; return; }
+  grid.innerHTML = prods.map(p => `<div class="product-card">
+    <div class="product-cat">${p.category}</div>
+    <div class="product-name">${p.name}</div>
+    <div class="product-price">₹${p.sellPrice}</div>
+    <div class="product-buy-price">${p.unit}</div>
+    <div class="product-stock">Stock: ${p.stock}</div>
+    <button class="product-add-btn" onclick="addToCart('${p.id}')">+</button>
+  </div>`).join('');
+}
+
+function renderStock() {
+  const body = document.getElementById('stock-table-body');
+  if (!body) return;
+  const lowLevel = db.settings.lowStockLevel || 5;
+  let low = 0, out = 0;
+  body.innerHTML = db.products.map(p => {
+    const isOut = p.stock === 0;
+    const isLow = p.stock <= lowLevel && p.stock > 0;
+    if (isOut) out++;
+    if (isLow) low++;
+    const status = isOut ? '<span class="badge badge-danger">Out of Stock</span>' : isLow ? '<span class="badge badge-warning">Low Stock</span>' : '<span class="badge badge-success">In Stock</span>';
+    return `<tr><td><strong>${p.name}</strong><br><small style="color:var(--text3)">${p.category}${p.company?' · '+p.company:''}</small></td><td style="font-family:var(--font-mono)">${p.stock} ${p.unit}</td><td>${status}</td><td><button class="btn btn-sm btn-outline" onclick="adjustStock('${p.id}')">Adjust</button></td></tr>`;
+  }).join('') || '<tr><td colspan="5" style="text-align:center;padding:20px;color:var(--text3)">No products</td></tr>';
+  document.getElementById('stock-total').textContent = db.products.length;
+  document.getElementById('stock-low').textContent = low;
+  document.getElementById('stock-out').textContent = out;
+  document.getElementById('low-stock-badge').textContent = low + out;
+  document.getElementById('stat-low-stock').textContent = low + out;
+}
+
+function adjustStock(id) {
+  const p = db.products.find(x => x.id === id);
+  if (!p) return;
+  const val = prompt(`Adjust stock for "${p.name}" (current: ${p.stock} ${p.unit})\nEnter new stock quantity:`);
+  if (val !== null && !isNaN(parseInt(val))) {
+    p.stock = Math.max(0, parseInt(val));
+    saveData(); renderStock(); renderBillProducts(); showToast('Stock updated!');
+  }
+}
+
+// ==================== CART ====================
+function addToCart(productId) {
+  const p = db.products.find(x => x.id === productId);
+  if (!p) return;
+  const existing = cart.find(x => x.id === productId);
+  if (existing) {
+    if (existing.qty >= p.stock) { showToast('Stock limit reached!', '⚠️'); return; }
+    existing.qty++;
+  } else {
+    cart.push({ id: productId, name: p.name, sellPrice: p.sellPrice, buyPrice: p.buyPrice, unit: p.unit, qty: 1 });
+  }
+  renderCart();
+  showToast(p.name + ' added to cart', '🛒');
+}
+
+function renderCart() {
+  const list = document.getElementById('cart-items-list');
+  if (!list) return;
+  if (!cart.length) {
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">Cart is empty — उत्पाद जोड़ें</div>';
+    updateBillTotals(); return;
+  }
+  list.innerHTML = cart.map((item, i) => `
+    <div class="cart-item">
+      <div class="cart-item-name">${item.name}<br><small style="color:var(--text3)">${item.unit}</small></div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty(${i}, -1)">−</button>
+        <span class="qty-val">${item.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${i}, 1)">+</button>
+      </div>
+      <div class="cart-item-price">₹${(item.sellPrice * item.qty).toFixed(0)}</div>
+      <button class="btn btn-icon" style="color:var(--danger);font-size:16px;background:none;border:none" onclick="removeFromCart(${i})">✕</button>
+    </div>`).join('');
+  updateBillTotals();
+}
+
+function changeQty(i, delta) {
+  const p = db.products.find(x => x.id === cart[i].id);
+  cart[i].qty = Math.max(1, Math.min(cart[i].qty + delta, p ? p.stock : 999));
+  renderCart();
+}
+
+function removeFromCart(i) {
+  cart.splice(i, 1);
+  renderCart();
+}
+
+function clearCart() {
+  cart = [];
+  buyerPhoto = null;
+  document.getElementById('buyer-name').value = '';
+  document.getElementById('buyer-phone').value = '';
+  document.getElementById('buyer-address').value = '';
+  document.getElementById('buyer-notes').value = '';
+  document.getElementById('buyer-photo-img').style.display = 'none';
+  document.getElementById('buyer-photo-placeholder').style.display = '';
+  document.getElementById('discount-input').value = '';
+  renderCart();
+}
+
+function setDiscType(type) {
+  discountType = type;
+  document.getElementById('disc-pct-btn').classList.toggle('active', type === 'pct');
+  document.getElementById('disc-flat-btn').classList.toggle('active', type === 'flat');
+  updateBillTotals();
+}
+
+function updateBillTotals() {
+  const subtotal = cart.reduce((s, i) => s + i.sellPrice * i.qty, 0);
+  const discVal = parseFloat(document.getElementById('discount-input')?.value) || 0;
+  let discAmount = 0;
+  if (discountType === 'pct') {
+    discAmount = subtotal * discVal / 100;
+    document.getElementById('disc-preview').textContent = `= ₹${discAmount.toFixed(0)}`;
+  } else {
+    discAmount = Math.min(discVal, subtotal);
+    document.getElementById('disc-preview').textContent = `${discVal > 0 ? ((discVal/subtotal*100).toFixed(1) + '%') : ''}`;
+  }
+  const total = Math.max(0, subtotal - discAmount);
+  const profit = cart.reduce((s, i) => s + (i.sellPrice - i.buyPrice) * i.qty, 0) - discAmount;
+  document.getElementById('bill-subtotal').textContent = '₹' + subtotal.toFixed(0);
+  document.getElementById('bill-total').textContent = '₹' + total.toFixed(0);
+  document.getElementById('bill-profit').textContent = '₹' + profit.toFixed(0);
+}
+
+function setPayment(method) {
+  paymentMethod = method;
+  document.querySelectorAll('.pay-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('pay-' + method).classList.add('active');
+}
+
+function setBuyerPhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    buyerPhoto = e.target.result;
+    document.getElementById('buyer-photo-img').src = buyerPhoto;
+    document.getElementById('buyer-photo-img').style.display = 'block';
+    document.getElementById('buyer-photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function generateBill() {
+  if (!cart.length) { showToast('Cart is empty!', '⚠️'); return; }
+  const subtotal = cart.reduce((s, i) => s + i.sellPrice * i.qty, 0);
+  const discVal = parseFloat(document.getElementById('discount-input')?.value) || 0;
+  let discAmount = discountType === 'pct' ? subtotal * discVal / 100 : Math.min(discVal, subtotal);
+  const total = Math.max(0, subtotal - discAmount);
+  const profit = cart.reduce((s, i) => s + (i.sellPrice - i.buyPrice) * i.qty, 0) - discAmount;
+
+  const bill = {
+    id: 'B' + Date.now().toString().slice(-6),
+    items: [...cart],
+    subtotal, discountType, discountValue: discVal, discountAmount: discAmount, total, profit,
+    payment: paymentMethod,
+    buyer: {
+      name: document.getElementById('buyer-name').value.trim(),
+      phone: document.getElementById('buyer-phone').value.trim(),
+      address: document.getElementById('buyer-address').value.trim(),
+      notes: document.getElementById('buyer-notes').value.trim(),
+      photo: buyerPhoto
+    },
+    createdAt: new Date().toISOString()
+  };
+
+  // Deduct stock
+  cart.forEach(item => {
+    const p = db.products.find(x => x.id === item.id);
+    if (p) p.stock = Math.max(0, p.stock - item.qty);
+  });
+
+  // Add to Udhar if udhar payment
+  if (paymentMethod === 'udhar' && bill.buyer.name) {
+    const existing = db.udhar.find(u => u.name.toLowerCase() === bill.buyer.name.toLowerCase());
+    if (existing) {
+      existing.amount += total;
+      existing.transactions = existing.transactions || [];
+      existing.transactions.push({ billId: bill.id, amount: total, date: bill.createdAt });
+    } else {
+      db.udhar.push({
+        id: 'U' + Date.now().toString().slice(-6),
+        name: bill.buyer.name, phone: bill.buyer.phone,
+        amount: total, photo: buyerPhoto,
+        transactions: [{ billId: bill.id, amount: total, date: bill.createdAt }],
+        createdAt: bill.createdAt
+      });
+    }
+  }
+
+  db.bills.push(bill);
+  saveData();
+
+  currentBillId = bill.id;
+  showBillDetail(bill);
+  clearCart();
+  refreshDashboard();
+  renderStock();
+  renderUdhar();
+  renderOrders();
+  showToast('Bill generated! #' + bill.id);
+}
+
+function showBillDetail(bill) {
+  if (!bill) return;
+  const b = document.getElementById('bill-detail-body');
+  const shop = db.settings.shopName || 'GKK';
+  b.innerHTML = `
+    <div style="text-align:center;margin-bottom:16px">
+      <div style="font-size:22px;font-weight:800;font-family:var(--font-display)">${shop}</div>
+      <div style="font-size:12px;color:var(--text2)">${db.settings.address||''} ${db.settings.phone?'• '+db.settings.phone:''}</div>
+      <div style="font-size:11px;color:var(--text3);margin-top:4px">Bill #${bill.id} • ${new Date(bill.createdAt).toLocaleString('hi-IN')}</div>
+    </div>
+    ${bill.buyer.name ? `
+    <div style="background:var(--bg3);border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;gap:10px">
+      ${bill.buyer.photo ? `<img src="${bill.buyer.photo}" style="width:40px;height:40px;border-radius:50%;object-fit:cover">` : '<div style="width:40px;height:40px;border-radius:50%;background:var(--primary-light);display:flex;align-items:center;justify-content:center;font-size:18px">👤</div>'}
+      <div>
+        <div style="font-weight:700">${bill.buyer.name}</div>
+        <div style="font-size:12px;color:var(--text2)">${bill.buyer.phone||''} ${bill.buyer.address?'• '+bill.buyer.address:''}</div>
+      </div>
+    </div>` : ''}
+    <table>
+      <thead><tr><th>Product</th><th>Qty</th><th>Rate</th><th>Amount</th></tr></thead>
+      <tbody>
+        ${bill.items.map(i => `<tr><td>${i.name}<small style="color:var(--text3)"> (${i.unit})</small></td><td>${i.qty}</td><td>₹${i.sellPrice}</td><td style="font-family:var(--font-mono)">₹${(i.sellPrice*i.qty).toFixed(0)}</td></tr>`).join('')}
+      </tbody>
+    </table>
+    <div style="padding:12px 0;border-top:1px solid var(--border);margin-top:8px">
+      <div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px"><span>Subtotal</span><span>₹${bill.subtotal.toFixed(0)}</span></div>
+      ${bill.discountAmount > 0 ? `<div style="display:flex;justify-content:space-between;margin-bottom:6px;font-size:13px;color:var(--success)"><span>Discount (${bill.discountType==='pct'?bill.discountValue+'%':'₹'+bill.discountValue})</span><span>-₹${bill.discountAmount.toFixed(0)}</span></div>` : ''}
+      <div style="display:flex;justify-content:space-between;font-size:18px;font-weight:800;padding-top:8px;border-top:2px solid var(--border)"><span>TOTAL</span><span style="font-family:var(--font-mono)">₹${bill.total.toFixed(0)}</span></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:13px;color:var(--text2)"><span>Payment</span><span style="text-transform:capitalize;font-weight:600">${bill.payment==='upi'?'📱 UPI':bill.payment==='udhar'?'📒 Udhar':'💵 Cash'}</span></div>
+    </div>
+    <div style="text-align:center;font-size:11px;color:var(--text3);margin-top:12px">धन्यवाद! Thank you for your purchase 🌿</div>
+  `;
+  openModal('bill-detail-modal');
+}
+
+function printBill() {
+  window.print();
+}
+
+// ==================== ORDERS ====================
+let orderFilter = 'all', orderPayFilter = 'all';
+
+function filterOrders(f, el) {
+  orderFilter = f;
+  document.querySelectorAll('#page-orders .pill-tabs:first-child .pill-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderOrders();
+}
+function filterOrdersPayment(f, el) {
+  orderPayFilter = f;
+  document.querySelectorAll('#page-orders .pill-tabs:nth-child(2) .pill-tab').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  renderOrders();
+}
+
+function renderOrders() {
+  const wrap = document.getElementById('orders-table-wrap');
+  if (!wrap) return;
+  const now = new Date();
+  const bills = db.bills.filter(b => {
+    const d = new Date(b.createdAt);
+    if (orderFilter === 'today') { if (d.toDateString() !== now.toDateString()) return false; }
+    else if (orderFilter === 'week') { const w = new Date(now); w.setDate(w.getDate()-7); if (d < w) return false; }
+    else if (orderFilter === 'month') { if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return false; }
+    if (orderPayFilter !== 'all' && b.payment !== orderPayFilter) return false;
+    return true;
+  }).reverse();
+
+  document.getElementById('orders-badge').textContent = bills.length;
+
+  if (!bills.length) { wrap.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📋</div><div class="empty-state-text">No orders found</div></div>'; return; }
+
+  wrap.innerHTML = bills.map(b => {
+    const payIcon = b.payment==='upi' ? '📱 UPI' : b.payment==='udhar' ? '📒 Udhar' : '💵 Cash';
+    const payBadge = b.payment==='cash' ? 'badge-success' : b.payment==='udhar' ? 'badge-danger' : 'badge-primary';
+    const dateStr = new Date(b.createdAt).toLocaleDateString('hi-IN');
+    return `<div class="order-card">
+      <div class="order-card-left">
+        <div class="order-card-id">#${b.id}</div>
+        <div class="order-card-customer">${b.buyer?.name || '—'}</div>
+        <div class="order-card-meta">${b.items.length} items · ${dateStr}</div>
+      </div>
+      <div class="order-card-right">
+        <div class="order-card-total">₹${b.total.toFixed(0)}</div>
+        <div class="order-card-actions">
+          <span class="badge ${payBadge}">${payIcon}</span>
+          <button class="btn btn-sm btn-outline" onclick="showBillDetailById('${b.id}')">View</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showBillDetailById(id) {
+  const b = db.bills.find(x => x.id === id);
+  if (b) showBillDetail(b);
+}
+
+// ==================== UDHAR ====================
+function setUdharPhoto(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    udharPhoto = e.target.result;
+    document.getElementById('udhar-photo-img').src = udharPhoto;
+    document.getElementById('udhar-photo-img').style.display = 'block';
+    document.getElementById('udhar-photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function saveUdhar() {
+  const name = document.getElementById('u-name').value.trim();
+  const amount = parseFloat(document.getElementById('u-amount').value);
+  if (!name || !amount) { showToast('Fill required fields', '⚠️'); return; }
+  db.udhar.push({
+    id: 'U' + Date.now().toString().slice(-6),
+    name, phone: document.getElementById('u-phone').value.trim(),
+    amount, photo: udharPhoto,
+    notes: document.getElementById('u-notes').value.trim(),
+    transactions: [{ amount, date: new Date().toISOString(), note: document.getElementById('u-notes').value.trim() }],
+    createdAt: new Date().toISOString()
+  });
+  saveData(); closeModal('add-udhar-modal');
+  document.getElementById('u-name').value = '';
+  document.getElementById('u-phone').value = '';
+  document.getElementById('u-amount').value = '';
+  document.getElementById('u-notes').value = '';
+  udharPhoto = null;
+  document.getElementById('udhar-photo-img').style.display = 'none';
+  document.getElementById('udhar-photo-placeholder').style.display = '';
+  renderUdhar(); refreshDashboard();
+  showToast('Udhar added!');
+}
+
+function renderUdhar() {
+  const list = document.getElementById('udhar-list');
+  if (!list) return;
+  const sorted = [...db.udhar].sort((a,b) => b.amount - a.amount);
+  if (!sorted.length) { list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">👍</div><div class="empty-state-text">कोई उधार नहीं</div></div>'; return; }
+  list.innerHTML = sorted.map(u => `
+    <div class="udhar-card" onclick="showUdharDetail('${u.id}')">
+      <div class="udhar-avatar">
+        ${u.photo ? `<img src="${u.photo}" alt="${u.name}">` : u.name[0].toUpperCase()}
+      </div>
+      <div class="udhar-info">
+        <div class="udhar-name">${u.name}</div>
+        <div class="udhar-phone">${u.phone || 'No phone'}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="udhar-amount">₹${u.amount.toFixed(0)}</div>
+        <div class="udhar-date">${new Date(u.createdAt).toLocaleDateString('hi-IN')}</div>
+      </div>
+    </div>`).join('');
+  const total = db.udhar.reduce((s,u) => s + u.amount, 0);
+  document.getElementById('udhar-total-amount').textContent = '₹' + total.toFixed(0);
+  document.getElementById('udhar-total-customers').textContent = db.udhar.length;
+}
+
+function showUdharDetail(id) {
+  const u = db.udhar.find(x => x.id === id);
+  if (!u) return;
+  currentUdharId = id;
+  document.getElementById('udhar-detail-title').textContent = u.name + ' — उधार Detail';
+  document.getElementById('udhar-detail-body').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:18px">
+      <div class="udhar-avatar" style="width:60px;height:60px;font-size:22px">
+        ${u.photo ? `<img src="${u.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` : u.name[0].toUpperCase()}
+      </div>
+      <div>
+        <div style="font-size:18px;font-weight:700">${u.name}</div>
+        <div style="color:var(--text2);font-size:13px">${u.phone||'No phone saved'}</div>
+      </div>
+    </div>
+    <div style="background:var(--danger);color:white;border-radius:12px;padding:16px;text-align:center;margin-bottom:16px">
+      <div style="font-size:12px;opacity:0.8">Total Pending</div>
+      <div style="font-size:28px;font-weight:800;font-family:var(--font-mono)">₹${u.amount.toFixed(0)}</div>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--text2);margin-bottom:8px">Transaction History</div>
+    ${(u.transactions||[]).map(t => `
+      <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px">
+        <span>${t.note||'Udhar'}</span>
+        <span style="font-family:var(--font-mono);font-weight:700;color:var(--danger)">₹${t.amount.toFixed(0)}</span>
+        <span style="color:var(--text3)">${new Date(t.date).toLocaleDateString('hi-IN')}</span>
+      </div>`).join('')}
+    <div style="margin-top:12px">
+      <label class="form-label">Partial Payment (₹)</label>
+      <div style="display:flex;gap:8px">
+        <input class="form-input" id="partial-pay" type="number" placeholder="Enter amount paid">
+        <button class="btn btn-success" onclick="applyPartialPayment()">Apply</button>
+      </div>
+    </div>
+  `;
+  openModal('udhar-detail-modal');
+}
+
+function applyPartialPayment() {
+  const u = db.udhar.find(x => x.id === currentUdharId);
+  if (!u) return;
+  const amt = parseFloat(document.getElementById('partial-pay').value);
+  if (!amt || amt <= 0) { showToast('Enter valid amount', '⚠️'); return; }
+  u.amount = Math.max(0, u.amount - amt);
+  u.transactions = u.transactions || [];
+  u.transactions.push({ amount: -amt, date: new Date().toISOString(), note: 'Partial payment received' });
+  if (u.amount === 0) {
+    db.udhar = db.udhar.filter(x => x.id !== currentUdharId);
+    closeModal('udhar-detail-modal');
+    showToast('✅ Udhar fully cleared!');
+  } else {
+    showToast('₹' + amt + ' payment recorded');
+    showUdharDetail(currentUdharId);
+  }
+  saveData(); renderUdhar(); refreshDashboard();
+}
+
+function markUdharPaid() {
+  db.udhar = db.udhar.filter(x => x.id !== currentUdharId);
+  saveData(); closeModal('udhar-detail-modal'); renderUdhar(); refreshDashboard();
+  showToast('✅ Udhar marked as paid!');
+}
+
+function deleteUdharCurrent() {
+  if (confirm('Delete this udhar entry?')) {
+    db.udhar = db.udhar.filter(x => x.id !== currentUdharId);
+    saveData(); closeModal('udhar-detail-modal'); renderUdhar(); refreshDashboard();
+    showToast('Deleted', '🗑');
+  }
+}
+
+// ==================== RETURNS ====================
+function processReturn() {
+  const billNo = document.getElementById('ret-bill').value.trim();
+  const customer = document.getElementById('ret-customer').value.trim();
+  const product = document.getElementById('ret-product').value.trim();
+  const qty = parseInt(document.getElementById('ret-qty').value) || 1;
+  const reason = document.getElementById('ret-reason').value;
+  if (!customer || !product) { showToast('Fill required fields', '⚠️'); return; }
+  db.returns.push({ id: 'R'+Date.now().toString().slice(-5), billNo, customer, product, qty, reason, createdAt: new Date().toISOString() });
+  saveData();
+  document.getElementById('ret-bill').value = '';
+  document.getElementById('ret-customer').value = '';
+  document.getElementById('ret-product').value = '';
+  document.getElementById('ret-qty').value = '';
+  renderReturns(); showToast('Return processed!');
+}
+
+function renderReturns() {
+  const list = document.getElementById('returns-list');
+  if (!list) return;
+  if (!db.returns.length) { list.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🔄</div><div class="empty-state-text">No returns yet</div></div>'; return; }
+  list.innerHTML = [...db.returns].reverse().map(r => `
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:12px 16px;border-bottom:1px solid var(--border);gap:8px">
+      <div style="flex:1;min-width:0">
+        <div style="font-weight:600;font-size:13.5px">${r.customer}</div>
+        <div style="font-size:12px;color:var(--text2);margin-top:2px">${r.product} × ${r.qty}</div>
+        <div style="font-size:11px;color:var(--text3);margin-top:2px">${r.billNo ? 'Bill: '+r.billNo+' · ' : ''}${new Date(r.createdAt).toLocaleDateString('hi-IN')}</div>
+      </div>
+      <span class="badge badge-warning" style="flex-shrink:0">${r.reason}</span>
+    </div>`).join('');
+}
+
+// ==================== PROFIT & LOSS ====================
+function renderProfitLoss() {
+  const revenue = db.bills.reduce((s,b) => s + b.total, 0);
+  const cost = db.bills.reduce((s,b) => s + b.items.reduce((ss,i) => ss + i.buyPrice * i.qty, 0), 0);
+  const profit = revenue - cost;
+  const margin = revenue ? (profit / revenue * 100).toFixed(1) : 0;
+  document.getElementById('pl-revenue').textContent = '₹' + revenue.toFixed(0);
+  document.getElementById('pl-cost').textContent = '₹' + cost.toFixed(0);
+  document.getElementById('pl-profit').textContent = '₹' + profit.toFixed(0);
+  document.getElementById('pl-margin').textContent = margin + '%';
+  document.getElementById('pl-bills').textContent = db.bills.length;
+  document.getElementById('pl-avg').textContent = '₹' + (db.bills.length ? (revenue/db.bills.length).toFixed(0) : 0);
+}
+
+function updateCalc() {
+  const buy = parseFloat(document.getElementById('calc-buy').value) || 0;
+  const sell = parseFloat(document.getElementById('calc-sell').value) || 0;
+  const qty = parseFloat(document.getElementById('calc-qty').value) || 1;
+  const profitPer = sell - buy;
+  const margin = buy ? ((profitPer / buy) * 100).toFixed(1) : 0;
+  const total = profitPer * qty;
+  document.getElementById('calc-result').innerHTML = `
+    <div class="calc-result-row"><span>Profit per unit:</span><span style="color:var(--primary)">₹${profitPer.toFixed(2)}</span></div>
+    <div class="calc-result-row"><span>Margin:</span><span style="color:var(--primary)">${margin}%</span></div>
+    <div class="calc-result-row"><span>Total Profit (${qty} units):</span><span>₹${total.toFixed(2)}</span></div>
+  `;
+}
+
+// ==================== DASHBOARD REFRESH ====================
+function refreshDashboard() {
+  const today = new Date().toDateString();
+  const todayBills = db.bills.filter(b => new Date(b.createdAt).toDateString() === today);
+  const todaySales = todayBills.reduce((s,b) => s + b.total, 0);
+  const todayProfit = todayBills.reduce((s,b) => s + b.profit, 0);
+  const todayRevenue = todaySales;
+  const margin = todayRevenue ? (todayProfit / todayRevenue * 100).toFixed(1) : 0;
+
+  document.getElementById('stat-sales').textContent = '₹' + todaySales.toFixed(0);
+  document.getElementById('stat-products').textContent = db.products.length;
+  document.getElementById('stat-bills').textContent = todayBills.length;
+
+  const udharTotal = db.udhar.reduce((s,u) => s + u.amount, 0);
+  document.getElementById('dash-profit').textContent = '₹' + todayProfit.toFixed(0);
+  document.getElementById('dash-margin').textContent = 'Margin: ' + margin + '%';
+  document.getElementById('dash-udhar').textContent = '₹' + udharTotal.toFixed(0);
+  document.getElementById('dash-udhar-count').textContent = db.udhar.length + ' customers';
+
+  // Recent bills
+  const recentEl = document.getElementById('recent-bills-list');
+  const recent = [...db.bills].reverse().slice(0, 5);
+  if (recent.length) {
+    recentEl.innerHTML = recent.map(b => `
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 18px;border-bottom:1px solid var(--border);cursor:pointer" onclick="showBillDetailById('${b.id}')">
+        <div>
+          <div style="font-size:13.5px;font-weight:600">#${b.id} — ${b.buyer?.name||'Customer'}</div>
+          <div style="font-size:11px;color:var(--text3)">${new Date(b.createdAt).toLocaleString('hi-IN')}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-family:var(--font-mono);font-weight:700">₹${b.total.toFixed(0)}</div>
+          <span class="badge ${b.payment==='cash'?'badge-success':b.payment==='udhar'?'badge-danger':'badge-primary'}" style="font-size:10px;text-transform:capitalize">${b.payment}</span>
+        </div>
+      </div>`).join('');
+  }
+
+  // Top udhar
+  const topUdharEl = document.getElementById('top-udhar-list');
+  const topUdhar = [...db.udhar].sort((a,b) => b.amount - a.amount).slice(0,5);
+  if (topUdhar.length) {
+    topUdharEl.innerHTML = topUdhar.map(u => `
+      <div style="display:flex;align-items:center;gap:12px;padding:10px 18px;border-bottom:1px solid var(--border);cursor:pointer" onclick="navTo('udhar',null);showUdharDetail('${u.id}')">
+        <div class="udhar-avatar" style="width:36px;height:36px;font-size:14px">
+          ${u.photo ? `<img src="${u.photo}" style="width:100%;height:100%;border-radius:50%;object-fit:cover">` : u.name[0].toUpperCase()}
+        </div>
+        <div style="flex:1">
+          <div style="font-size:13px;font-weight:600">${u.name}</div>
+          <div style="font-size:11px;color:var(--text3)">${u.phone||'No phone'}</div>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:14px;font-weight:700;color:var(--danger)">₹${u.amount.toFixed(0)}</div>
+      </div>`).join('');
+  }
+
+  renderStock();
+}
+
+// ==================== AI CHAT ====================
+let aiProvider = 'gemini'; // 'gemini' | 'groq'
+
+const AI_SYSTEM_PROMPT = 'You are an expert agricultural assistant for a krishi kendra (agri shop) in Madhya Pradesh, India. Answer questions about seeds, fertilizers, pesticides, crop diseases, irrigation, and farming in simple Hindi/English (Hinglish). Be concise and practical. Use ₹ for prices if mentioned.';
+
+function setAIProvider(p) {
+  aiProvider = p;
+  document.getElementById('btn-gemini').classList.toggle('active', p === 'gemini');
+  document.getElementById('btn-groq').classList.toggle('active', p === 'groq');
+  const icons = { gemini: '✨', groq: '⚡' };
+  const names = { gemini: 'AI Krishi Assistant (Gemini)', groq: 'AI Krishi Assistant (Groq)' };
+  const notes = { gemini: 'Gemini Flash (Free)', groq: 'Groq LLaMA (Free)' };
+  document.getElementById('ai-provider-icon').textContent = icons[p] || '✨';
+  document.getElementById('ai-provider-name').textContent = names[p] || 'AI Krishi Assistant';
+  document.getElementById('ai-provider-note').textContent = notes[p] || '';
+  showToast('Switched to ' + (p === 'gemini' ? '✨ Gemini' : '⚡ Groq'));
+}
+
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+  addChatMsg(msg, 'user');
+  input.value = '';
+
+  const typingEl = addChatMsg('Thinking... 🤔', 'ai', true);
+
+  try {
+    let replyText = '';
+
+    if (aiProvider === 'gemini') {
+      const key = db.settings.geminiKey;
+      if (!key) { typingEl.remove(); addChatMsg('⚠️ Please add your Gemini API key in Settings to use Gemini.', 'ai'); return; }
+      const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          systemInstruction: { parts: [{ text: AI_SYSTEM_PROMPT }] },
+          contents: [{ role: 'user', parts: [{ text: msg }] }],
+          generationConfig: { maxOutputTokens: 1000 }
+        })
+      });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message);
+      replyText = data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+
+    } else if (aiProvider === 'groq') {
+      const key = db.settings.groqKey;
+      if (!key) { typingEl.remove(); addChatMsg('⚠️ Please add your Groq API key in Settings to use Groq.', 'ai'); return; }
+      const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+        body: JSON.stringify({
+          model: 'llama-3.3-70b-versatile',
+          max_tokens: 1000,
+          messages: [
+            { role: 'system', content: AI_SYSTEM_PROMPT },
+            { role: 'user', content: msg }
+          ]
+        })
+      });
+      const data = await resp.json();
+      if (data.error) throw new Error(data.error.message || JSON.stringify(data.error));
+      replyText = data.choices?.[0]?.message?.content || 'No response received.';
+    }
+    typingEl.remove();
+    addChatMsg(replyText, 'ai');
+    saveChatToHistory(msg, replyText);
+
+  } catch(e) {
+    typingEl.remove();
+    addChatMsg('❌ Error: ' + e.message, 'ai');
+  }
+}
+
+function addChatMsg(text, role, isTemp) {
+  const msgs = document.getElementById('chat-messages');
+  const el = document.createElement('div');
+  el.className = 'chat-msg ' + role;
+  el.textContent = text;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+
+function askQuick(q) {
+  document.getElementById('chat-input').value = q;
+  sendChat();
+}
+
+// ==================== DISEASE SCANNER ====================
+function handleDiseaseFile(input) {
+  if (!input.files[0]) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    diseaseImageData = e.target.result;
+    document.getElementById('disease-img').src = diseaseImageData;
+    document.getElementById('disease-preview').style.display = 'block';
+    document.getElementById('disease-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(input.files[0]);
+}
+
+function handleDiseaseFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('disease-upload-area').style.borderColor = '';
+  const file = e.dataTransfer.files[0];
+  if (file && file.type.startsWith('image/')) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      diseaseImageData = ev.target.result;
+      document.getElementById('disease-img').src = diseaseImageData;
+      document.getElementById('disease-preview').style.display = 'block';
+      document.getElementById('disease-placeholder').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+async function scanDisease() {
+  if (!diseaseImageData) { showToast('Please upload a crop photo first', '⚠️'); return; }
+  const apiKey = db.settings.geminiKey;
+  if (!apiKey) { showToast('Add Gemini API key in Settings first', '⚠️'); return; }
+  const resultCard = document.getElementById('disease-result-card');
+  resultCard.innerHTML = '<div style="text-align:center;padding:30px;color:var(--text2)"><div style="font-size:30px;margin-bottom:8px">✨</div>Gemini AI analyzing... / विश्लेषण हो रहा है</div>';
+
+  try {
+    const base64 = diseaseImageData.split(',')[1];
+    const mediaType = diseaseImageData.split(';')[0].split(':')[1];
+    const resp = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents: [{ role: 'user', parts: [
+          { inline_data: { mime_type: mediaType, data: base64 } },
+          { text: 'You are an expert agricultural disease diagnostician for India. Analyze this crop image and provide: 1) Disease/pest identified (if any), 2) Severity, 3) Treatment recommendations with pesticide/fungicide names available in India with doses, 4) Prevention tips. If not a crop image, say so. Be concise and practical. Use Hindi and English (Hinglish).' }
+        ]}],
+        generationConfig: { maxOutputTokens: 800 }
+      })
+    });
+    const data = await resp.json();
+    if (data.error) throw new Error(data.error.message);
+    const result = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Could not analyze image.';
+    resultCard.innerHTML = `<div style="font-size:14px;line-height:1.8;white-space:pre-wrap;padding:4px">${result}</div>`;
+
+    // Save to history
+    const history = db.diseaseHistory || [];
+    history.unshift({ date: new Date().toLocaleDateString('hi-IN'), result: result.substring(0, 150) + '...' });
+    db.diseaseHistory = history.slice(0, 10);
+    saveData();
+    renderDiseaseHistory();
+    showToast('✨ Disease scan complete!');
+  } catch(e) {
+    resultCard.innerHTML = `<div class="empty-state"><div class="empty-state-icon">❌</div><div class="empty-state-text">Scan failed: ${e.message}</div></div>`;
+  }
+}
+
+function clearDisease() {
+  diseaseImageData = null;
+  document.getElementById('disease-img').src = '';
+  document.getElementById('disease-preview').style.display = 'none';
+  document.getElementById('disease-placeholder').style.display = 'block';
+  document.getElementById('disease-result-card').innerHTML = '<div class="empty-state"><div class="empty-state-icon">🌾</div><div class="empty-state-text">Upload a crop photo to diagnose</div></div>';
+}
+
+function renderDiseaseHistory() {
+  const el = document.getElementById('disease-history');
+  if (!el) return;
+  const history = db.diseaseHistory || [];
+  if (!history.length) { el.innerHTML = '<div class="empty-state"><div class="empty-state-icon">📷</div><div class="empty-state-text">No recent scans</div></div>'; return; }
+  el.innerHTML = history.map(h => `
+    <div style="padding:12px 16px;border-bottom:1px solid var(--border)">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px">📅 ${h.date}</div>
+      <div style="font-size:13px;color:var(--text2);line-height:1.5">${h.result}</div>
+    </div>`).join('');
+}
+
+// ==================== SETTINGS ====================
+function saveSettings() {
+  db.settings.shopName = document.getElementById('set-shop-name').value.trim();
+  db.settings.ownerName = document.getElementById('set-owner').value.trim();
+  db.settings.phone = document.getElementById('set-phone').value.trim();
+  db.settings.address = document.getElementById('set-address').value.trim();
+  db.settings.lowStockLevel = parseInt(document.getElementById('set-low-stock').value) || 5;
+  saveData(); showToast('Settings saved!');
+}
+
+function saveApiKey(provider) {
+  if (provider === 'gemini') {
+    const key = document.getElementById('gemini-key-input').value.trim();
+    db.settings.geminiKey = key;
+    saveData(); showToast(key ? '✨ Gemini key saved!' : 'Gemini key cleared');
+  } else if (provider === 'groq') {
+    const key = document.getElementById('groq-key-input').value.trim();
+    db.settings.groqKey = key;
+    saveData(); showToast(key ? '⚡ Groq key saved!' : 'Groq key cleared');
+  }
+}
+
+function toggleKeyVis(inputId, btn) {
+  const inp = document.getElementById(inputId);
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+function exportData() {
+  const json = JSON.stringify(db, null, 2);
+  const a = document.createElement('a');
+  a.href = 'data:application/json;charset=utf-8,' + encodeURIComponent(json);
+  a.download = 'gkk_data_' + new Date().toISOString().slice(0,10) + '.json';
+  a.click();
+  showToast('Data exported!');
+}
+
+function importData(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (confirm('Import will merge with existing data. Continue?')) {
+        if (data.products) db.products = [...db.products, ...data.products.filter(np => !db.products.find(p => p.id === np.id))];
+        if (data.bills) db.bills = [...db.bills, ...data.bills.filter(nb => !db.bills.find(b => b.id === nb.id))];
+        if (data.udhar) db.udhar = data.udhar;
+        if (data.settings) db.settings = { ...db.settings, ...data.settings };
+        saveData(); location.reload();
+      }
+    } catch(err) { showToast('Invalid JSON file!', '❌'); }
+  };
+  reader.readAsText(file);
+}
+
+function clearAllData() {
+  if (confirm('⚠️ Clear ALL data? This cannot be undone!')) {
+    if (confirm('Are you sure? All products, bills, and udhar will be deleted!')) {
+      localStorage.removeItem('gkk_db_v3');
+      location.reload();
+    }
+  }
+}
+</script>
+
+<style>
+/* ── DualCam Recorder styles ───────────────────────── */
+@keyframes dc-pulse-anim {
+  0%   { transform: scale(1);   opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,.7); }
+  70%  { transform: scale(1.4); opacity: .7; box-shadow: 0 0 0 12px rgba(239,68,68,0); }
+  100% { transform: scale(1);   opacity: 1; box-shadow: 0 0 0 0 rgba(239,68,68,0); }
+}
+.dc-btn {
+  width: 100%; padding: 18px; border: none; border-radius: 16px;
+  font-size: 17px; font-weight: 800; cursor: pointer; transition: transform .1s, opacity .1s;
+  letter-spacing: .3px;
+}
+.dc-btn:active { transform: scale(.97); opacity: .9; }
+.dc-btn-start { background: linear-gradient(135deg, #ef4444, #b91c1c); color: #fff; }
+.dc-btn-stop  { background: linear-gradient(135deg, #374151, #111827); color: #fff; }
+.dc-status {
+  font-size: 13px; font-weight: 600; margin-top: 6px; letter-spacing: .2px;
+}
+.dc-status-idle { color: var(--muted); }
+.dc-status-rec  { color: #ef4444; }
+.dc-mode-card {
+  background: var(--bg2); border: 2px solid var(--border);
+  border-radius: 14px; padding: 14px 12px; cursor: pointer; transition: border-color .15s, background .15s;
+  text-align: center;
+}
+.dc-mode-card:hover  { border-color: var(--primary); }
+.dc-mode-active {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 8%, var(--bg2)) !important;
+}
+</style>
+
+<script src="dualcam.js"></script>
+</body>
+</html>
