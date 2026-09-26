@@ -69,7 +69,8 @@ jobs:
           # Copy plugin files (overwrites the generated MainActivity.java)
           cp android-plugin/DualCamRecorderPlugin.kt "$PKGDIR/"
           cp android-plugin/RecordingService.kt      "$PKGDIR/"
-          cp android-plugin/MainActivity.java        "$PKGDIR/"
+          cp android-plugin/MainActivity.kt        "$PKGDIR/"
+          rm -f "$PKGDIR/MainActivity.java"
           echo "✓ Plugin files injected:"
           ls -lh "$PKGDIR/"
 
