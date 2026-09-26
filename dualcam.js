@@ -4,34 +4,58 @@
 ═══════════════════════════════════════════════════════ */
 
 const DualCam = (() => {
-  // Native plugin handle — null if running in browser
-  const Plugin = () =>
-    (window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.DualCamRecorder)
-      ? window.Capacitor.Plugins.DualCamRecorder
-      : null;
 
-  const isNative = () => !!Plugin();
+  // ── Plugin handle ──────────────────────────────────────────────────────
+  // Cap 6: use registerPlugin() to get the typed proxy.
+  // The global Capacitor runtime is injected by the WebView before any JS runs.
+  let _plugin = null;
+
+  function Plugin() {
+    if (_plugin) return _plugin;
+    try {
+      if (window.Capacitor && typeof window.Capacitor.registerPlugin === 'function') {
+        _plugin = window.Capacitor.registerPlugin('DualCamRecorder');
+        return _plugin;
+      }
+    } catch (e) {
+      console.warn('[DualCam] registerPlugin failed:', e);
+    }
+    return null;
+  }
+
+  const isNative = () => !!(window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform());
 
   // ── State ──────────────────────────────────────────────────────────────
   let recording      = false;
   let elapsedSecs    = 0;
   let timerInterval  = null;
-  let selectedMode   = 'background'; // 'background' | 'screenoff'
+  let selectedMode   = 'background';
 
   // ── Plugin calls ────────────────────────────────────────────────────────
   async function startRec() {
-    if (!isNative()) { dcToast('⚠️ Install the GKK app to record'); return; }
+    if (!isNative()) {
+      dcToast('⚠️ Native app required — install the GKK APK');
+      return;
+    }
+    const p = Plugin();
+    if (!p) {
+      dcToast('⚠️ DualCamRecorder plugin not found');
+      return;
+    }
     try {
-      const res = await Plugin().startRecording({ mode: selectedMode });
-      if (res.started) {
+      const res = await p.startRecording({ mode: selectedMode });
+      if (res && res.started) {
         recording   = true;
         elapsedSecs = 0;
         renderRecorderUI();
         startTimer();
         dcToast('🔴 Recording started — both cameras active');
+      } else {
+        dcToast('⚠️ Could not start recording');
       }
     } catch (e) {
-      dcToast('Error: ' + (e.message || e));
+      dcToast('Error: ' + (e.message || JSON.stringify(e)));
+      console.error('[DualCam] startRecording error', e);
     }
   }
 
@@ -39,11 +63,13 @@ const DualCam = (() => {
     if (!isNative()) return;
     stopTimer();
     dcToast('⏹ Stopping…');
+    const p = Plugin();
+    if (!p) return;
     try {
-      const res = await Plugin().stopRecording();
+      const res = await p.stopRecording();
       recording = false;
       renderRecorderUI();
-      if (res.backPath || res.frontPath) {
+      if (res && (res.backPath || res.frontPath)) {
         dcToast('✅ Saved to Downloads/DualCam');
         await loadRecordings();
       }
@@ -56,18 +82,22 @@ const DualCam = (() => {
 
   async function loadRecordings() {
     if (!isNative()) { renderBrowserFallback(); return; }
+    const p = Plugin();
+    if (!p) return;
     try {
-      const res = await Plugin().getRecordings();
+      const res = await p.getRecordings();
       renderRecordingsList(res.recordings || []);
     } catch (e) {
-      console.warn('getRecordings error', e);
+      console.warn('[DualCam] getRecordings error', e);
     }
   }
 
   async function deleteRec(timestamp) {
     if (!isNative() || !confirm('Delete this recording pair?')) return;
+    const p = Plugin();
+    if (!p) return;
     try {
-      await Plugin().deleteRecording({ timestamp });
+      await p.deleteRecording({ timestamp });
       dcToast('Deleted');
       await loadRecordings();
     } catch (e) {
@@ -77,8 +107,10 @@ const DualCam = (() => {
 
   async function checkStatus() {
     if (!isNative()) return;
+    const p = Plugin();
+    if (!p) return;
     try {
-      const res = await Plugin().isRecording();
+      const res = await p.isRecording();
       recording   = res.recording;
       elapsedSecs = res.elapsed || 0;
       if (recording) startTimer();
@@ -204,7 +236,14 @@ const DualCam = (() => {
 
   function dcToast(msg) {
     if (typeof toast === 'function') toast(msg);
-    else console.log('[DualCam]', msg);
+    else {
+      // fallback visible alert if toast() not available
+      const t = document.createElement('div');
+      t.textContent = msg;
+      t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:10px 18px;border-radius:20px;font-size:13px;z-index:9999;max-width:80vw;text-align:center';
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3000);
+    }
   }
 
   // ── Public API ────────────────────────────────────────────────────────
