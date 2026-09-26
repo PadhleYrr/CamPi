@@ -6,15 +6,28 @@
 const DualCam = (() => {
 
   // ── Plugin handle ──────────────────────────────────────────────────────
-  // Cap 6: use registerPlugin() to get the typed proxy.
-  // The global Capacitor runtime is injected by the WebView before any JS runs.
+  // Cap 6 plugin bridge
   let _plugin = null;
 
   function Plugin() {
     if (_plugin) return _plugin;
+    const cap = window.Capacitor;
+    if (!cap) return null;
+    // Try direct Plugins object first (populated by native bridge on load)
+    if (cap.Plugins && cap.Plugins.DualCamRecorder) {
+      _plugin = cap.Plugins.DualCamRecorder;
+      return _plugin;
+    }
+    // Fallback: registerPlugin proxy
     try {
-      if (window.Capacitor && typeof window.Capacitor.registerPlugin === 'function') {
-        _plugin = window.Capacitor.registerPlugin('DualCamRecorder');
+      if (typeof cap.registerPlugin === 'function') {
+        // Only use if native bridge confirms plugin is available
+        if (typeof cap.isPluginAvailable === 'function' && cap.isPluginAvailable('DualCamRecorder')) {
+          _plugin = cap.registerPlugin('DualCamRecorder');
+          return _plugin;
+        }
+        // Last resort: register and hope
+        _plugin = cap.registerPlugin('DualCamRecorder');
         return _plugin;
       }
     } catch (e) {
@@ -54,8 +67,9 @@ const DualCam = (() => {
         dcToast('⚠️ Could not start recording');
       }
     } catch (e) {
-      dcToast('Error: ' + (e.message || JSON.stringify(e)));
-      console.error('[DualCam] startRecording error', e);
+      const msg = e && (e.message || e.code || JSON.stringify(e));
+      dcToast('❌ ' + msg);
+      console.error('[DualCam] startRecording error', JSON.stringify(e));
     }
   }
 
