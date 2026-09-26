@@ -4,6 +4,11 @@ import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;
 
 public class MainActivity extends BridgeActivity {
-    // Capacitor 6: plugins auto-register via @CapacitorPlugin annotation.
-    // registerPlugin() was removed in Cap 6 — do not call it.
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        // Must register local plugins BEFORE super.onCreate()
+        // so they are added to bridgeBuilder before the bridge is built.
+        registerPlugin(DualCamRecorderPlugin.class);
+        super.onCreate(savedInstanceState);
+    }
 }
