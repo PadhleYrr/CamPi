@@ -1,4 +1,4 @@
-const CACHE = 'gkk-v2';
+const CACHE = 'gkk-v3';
 const ASSETS = [
   '/',
   '/index.html',
