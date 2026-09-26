@@ -14,8 +14,10 @@ import java.util.*
 @CapacitorPlugin(
     name = "DualCamRecorder",
     permissions = [
-        Permission(strings = [Manifest.permission.CAMERA], alias = "camera"),
-        Permission(strings = [Manifest.permission.RECORD_AUDIO], alias = "microphone")
+        Permission(strings = [Manifest.permission.CAMERA],            alias = "camera"),
+        Permission(strings = [Manifest.permission.RECORD_AUDIO],      alias = "microphone"),
+        Permission(strings = [Manifest.permission.READ_MEDIA_VIDEO],  alias = "mediaVideo"),
+        Permission(strings = ["android.permission.POST_NOTIFICATIONS"], alias = "notifications")
     ]
 )
 class DualCamRecorderPlugin : Plugin() {
@@ -26,23 +28,41 @@ class DualCamRecorderPlugin : Plugin() {
 
     @PluginMethod
     fun startRecording(call: PluginCall) {
-        val camState  = getPermissionState("camera")
-        val micState  = getPermissionState("microphone")
+        val camState = getPermissionState("camera")
+        val micState = getPermissionState("microphone")
+
         if (camState != PermissionState.GRANTED || micState != PermissionState.GRANTED) {
             requestAllPermissions(call, "permissionsCallback")
             return
         }
+
+        // Android 13+: request POST_NOTIFICATIONS so the foreground service
+        // notification can show — without it the service is killed immediately
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val notifState = getPermissionState("notifications")
+            if (notifState != PermissionState.GRANTED) {
+                requestPermissionForAlias("notifications", call, "notifCallback")
+                return
+            }
+        }
+
         doStart(call)
     }
 
     @PermissionCallback
     private fun permissionsCallback(call: PluginCall) {
-        if (getPermissionState("camera") == PermissionState.GRANTED &&
+        if (getPermissionState("camera")     == PermissionState.GRANTED &&
             getPermissionState("microphone") == PermissionState.GRANTED) {
-            doStart(call)
+            startRecording(call)
         } else {
-            call.reject("Camera and microphone permissions required")
+            call.reject("Camera and microphone permissions are required")
         }
+    }
+
+    @PermissionCallback
+    private fun notifCallback(call: PluginCall) {
+        // Non-fatal if denied — proceed, service may still run without visible notif
+        doStart(call)
     }
 
     private fun doStart(call: PluginCall) {
@@ -50,7 +70,7 @@ class DualCamRecorderPlugin : Plugin() {
             call.reject("Already recording")
             return
         }
-        val mode = call.getString("mode", "background") // "background" | "screenoff"
+        val mode = call.getString("mode", "background")
         val intent = Intent(context, RecordingService::class.java).apply {
             action = RecordingService.ACTION_START
             putExtra("mode", mode)
@@ -78,7 +98,6 @@ class DualCamRecorderPlugin : Plugin() {
             action = RecordingService.ACTION_STOP
         }
         context.startService(intent)
-        // Give recorder 1.5 s to flush and release
         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
             val paths = RecordingService.lastPaths
             val ret = JSObject()
@@ -107,14 +126,13 @@ class DualCamRecorderPlugin : Plugin() {
                 ?.sortedByDescending { it.lastModified() }
                 ?: emptyList()
 
-            // Group by timestamp suffix (everything after first underscore)
             val pairs = linkedMapOf<String, MutableMap<String, File>>()
             files.forEach { f ->
-                val name = f.nameWithoutExtension           // e.g. back_20250101_120000
+                val name = f.nameWithoutExtension
                 val underIdx = name.indexOf('_')
                 if (underIdx >= 0) {
-                    val cam = name.substring(0, underIdx)   // "back" | "front"
-                    val ts  = name.substring(underIdx + 1)  // "20250101_120000"
+                    val cam = name.substring(0, underIdx)
+                    val ts  = name.substring(underIdx + 1)
                     pairs.getOrPut(ts) { mutableMapOf() }[cam] = f
                 }
             }
@@ -142,7 +160,7 @@ class DualCamRecorderPlugin : Plugin() {
 
     @PluginMethod
     fun deleteRecording(call: PluginCall) {
-        val ts  = call.getString("timestamp") ?: run { call.reject("timestamp required"); return }
+        val ts = call.getString("timestamp") ?: run { call.reject("timestamp required"); return }
         val dir = File(context.getExternalFilesDir(android.os.Environment.DIRECTORY_MOVIES), "DualCam")
         var deleted = 0
         dir.listFiles()
