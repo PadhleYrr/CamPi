@@ -61,6 +61,18 @@ jobs:
           npx cap add android 2>/dev/null || true
           npx cap sync android
 
+      # ── Create minimal splash drawable to prevent resource-not-found crash ─
+      - name: Create splash drawable resource
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          cat > android/app/src/main/res/drawable/splash.xml << 'XML'
+          <?xml version="1.0" encoding="utf-8"?>
+          <shape xmlns:android="http://schemas.android.com/apk/res/android">
+              <solid android:color="#1a4a2e"/>
+          </shape>
+          XML
+          echo "✓ splash.xml created"
+
       # ── Inject DualCam plugin source files ───────────────────────────────
       - name: Inject DualCam plugin Kotlin sources
         run: |
